@@ -1,4 +1,5 @@
 package testBeer;
+
 /**
  * Created with IntelliJ IDEA.
  * User: zhangkl

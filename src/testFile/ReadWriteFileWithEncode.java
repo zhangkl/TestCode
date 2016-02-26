@@ -9,11 +9,11 @@ public class ReadWriteFileWithEncode {
     public static void write(String path, String content, String encoding)
             throws IOException {
         File file = new File(path);
-        file.delete();
-        file.createNewFile();
+        if(!file.exists())
+            file.createNewFile();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(file), encoding));
-        writer.write(content);
+        writer.append(content);
         writer.close();
     }
 
@@ -70,9 +70,82 @@ public class ReadWriteFileWithEncode {
     }
 
     public static void main(String[] args) throws IOException {
-        String path = "C:\\Users\\lenovo-01\\Desktop\\213\\PBC152900H00002010030011000.txt";
-        System.out.println(read(path, "GB2312"));
-        getFileEncode(path);
+        long startTime = System.currentTimeMillis();
+        String path = "C:\\Users\\lenovo-01\\Desktop\\100.txt";
+        File file = new File(path);
+        if(!file.exists())
+            file.createNewFile();
+        String content = "IID,TRADEID,NAME,CERTTYPE,CERTNO,FINANCECODE,GENERALTYPE,TYPE,ACCOUNT,AREACODE,DATEOPENED,DATECLOSED,CURRENCY,CREDITLIMIT,SHAREACCOUNT,MAXDEBT,GUARANTEEWAY,TERMSFREQ,MONTHDURATION,MONTHUNPAID,BILLINGDATE,RECENTPAYDATE,SCHEDULEDAMOUNT,ACTUALPAYAMOUNT,BALANCE,CURTERMSPASTDUE,AMOUNTPASTDUE,AMOUNTPASTDUE30,AMOUNTPASTDUE60,AMOUNTPASTDUE90,AMOUNTPASTDUE180,TERMSPASTDUE,MAXTERMSPASTDUE,CLASS5STATE,ACCOUNTSTATE,PAYSTATE24MONTH,UNPAID180,INFOINDICATOR,RECORDOPRTYPEOFINFO,DGETDATE,IREPORTSTATE,DATACOMPLETESTATE,GUARANTEEFLAG,SPECIALTRADEFLAG,RESERVED"+"\n";
+        long IID = 0;
+        String IREPORTSTATE = "0";
+        String RESERVED = "0";
+        String SPECIALTRADEFLAG = "0";
+        String GUARANTEEFLAG = "0";
+        String DATACOMPLETESTATE = "5";
+        String DGETDATE = "20-3月 -14 08.49.23.494 下午";
+        String RECORDOPRTYPEOFINFO = "1";
+        String INFOINDICATOR = "2";
+        String UNPAID180 = "0";
+        String PAYSTATE24MONTH = "///////////////////////*";
+        String ACCOUNTSTATE = "1";
+        String CLASS5STATE = "1";
+        String MAXTERMSPASTDUE = "99";
+        String TERMSPASTDUE = "999";
+        String AMOUNTPASTDUE180 = "0";
+        String AMOUNTPASTDUE90 = "0";
+        String AMOUNTPASTDUE60 = "0";
+        String AMOUNTPASTDUE30 = "0";
+        String AMOUNTPASTDUE = "0";
+        String CURTERMSPASTDUE = "0";
+        String BALANCE = "10000";
+        String ACTUALPAYAMOUNT = "0";
+        String SCHEDULEDAMOUNT = "0";
+        String RECENTPAYDATE = "2013/1/1";
+        String BILLINGDATE = "2013/1/1";
+        String MONTHUNPAID = "U";
+        String MONTHDURATION = "U";
+        String TERMSFREQ = "8";
+        String GUARANTEEWAY = "4";
+        String MAXDEBT = "10000";
+        String SHAREACCOUNT = "10000";
+        String CREDITLIMIT = "10000";
+        String CURRENCY = "CNY";
+        String DATEOPENED = "2013/1/1";
+        String DATECLOSED = "2014/1/1";
+        String AREACODE = "110108";
+        String ACCOUNT = "";
+        String TYPE = "91";
+        long TRADEID = 0;
+        String NAME = "";
+        String CERTTYPE = "X";
+        String CERTNO = "";
+        String FINANCECODE = "G10440402007368605";
+        String GENERALTYPE = "1";
+        if(!file.exists()) {
+            file.createNewFile();
+        }
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), "utf-8"));
+        writer.write(content);
+        for (int i = 0; i < 1000000; i++) {
+            IID++;
+            String iidStr = "";
+            if(iidStr.length()<7){
+                for (int j=0;j<7-(IID+"").length();j++){
+                    iidStr += "0";
+                }
+            }
+            iidStr += IID;
+            CERTNO = "zjhm0"+iidStr;
+            NAME = "第三方测试0"+iidStr;
+            ACCOUNT = "ywh0"+iidStr;
+            String data = iidStr+","+TRADEID+","+NAME+","+CERTTYPE+","+CERTNO+","+FINANCECODE+","+GENERALTYPE+","+TYPE+","+ACCOUNT+","+AREACODE+","+DATEOPENED+","+DATECLOSED+","+CURRENCY+","+CREDITLIMIT+","+SHAREACCOUNT+","+MAXDEBT+","+GUARANTEEWAY+","+TERMSFREQ+","+MONTHDURATION+","+MONTHUNPAID+","+BILLINGDATE+","+RECENTPAYDATE+","+SCHEDULEDAMOUNT+","+ACTUALPAYAMOUNT+","+BALANCE+","+CURTERMSPASTDUE+","+AMOUNTPASTDUE+","+AMOUNTPASTDUE30+","+AMOUNTPASTDUE60+","+AMOUNTPASTDUE90+","+AMOUNTPASTDUE180+","+TERMSPASTDUE+","+MAXTERMSPASTDUE+","+CLASS5STATE+","+ACCOUNTSTATE+","+PAYSTATE24MONTH+","+UNPAID180+","+INFOINDICATOR+","+RECORDOPRTYPEOFINFO+","+DGETDATE+","+IREPORTSTATE+","+DATACOMPLETESTATE+","+GUARANTEEFLAG+","+SPECIALTRADEFLAG+","+RESERVED;
+            writer.append(data);
+            writer.append("\n");
+        }
+        writer.close();
+        long entTime = System.currentTimeMillis();
+        System.out.println("运行时间(秒)："+(entTime-startTime)/1000f);
 //        ReadWriteFileWithEncode.write(path, read(path,"GB2312"), "ASCII");
         /*byte[] b = new byte[1];
         b[0]= 13;

@@ -22,13 +22,14 @@ public class TestHttp {
     public static void main(String[] args) {
         try {
             TestHttp request = new TestHttp();
-            request.setDefaultContentEncoding("UTF-8");
+            request.setDefaultContentEncoding("utf-8");
             Map map = new HashMap();
             /*map.put("staBankname","北京分行");
             map.put("secBankname","北京昌平支行");
             map.put("brName","");*/
-            map.put("brzo","00115-00200");
-            HttpRespons hr = request.send("https://jnb.icbc.com.cn/app/coin/materials/serlvets/getbkDrawDateServlet", "POST", map, null);
+            //map.put("brzo","00115-00200");
+            String url = "http://shixin.court.gov.cn/index_publish_new.jsp";
+            HttpRespons hr = request.send(url, "POST", map, null);
 
             System.out.println(hr.getUrlString());
             System.out.println(hr.getProtocol());
@@ -184,6 +185,7 @@ public class TestHttp {
         String ecod = urlConnection.getContentEncoding();
         if (ecod == null)
             ecod = this.defaultContentEncoding;
+
         try {
             InputStream in = urlConnection.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(
