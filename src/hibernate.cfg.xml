@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+    "-//Hibernate/Hibernate Configuration DTD//EN"
+    "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+      <property name="hibernate.connection.driver_class">oracle.jdbc.driver.OracleDriver</property><!-- 驱动 -->
+      <property name="hibernate.connection.url">jdbc:oracle:thin:@192.168.0.196:1521:cred</property><!-- 默认连接数据库test以及默认端口3306 -->
+      <property name="hibernate.connection.username">cred</property><!-- 用户名 -->
+      <property name="hibernate.connection.password">cred</property><!-- 密码 -->
+      <property name="hibernate.dialect">org.hibernate.dialect.Oracle9iDialect</property><!-- 方言 -->
+      <property name="show_sql">false</property><!-- 是否后台打印语句 -->
+      <property name="hibernate.current_session_context_class">thread</property>
+
+      <mapping class="testHttp.model.DishonestyModel"/>
+      <mapping resource="testHttp/model/DishonestyModel.hbm.xml"/>
+  </session-factory>
+</hibernate-configuration>
+
