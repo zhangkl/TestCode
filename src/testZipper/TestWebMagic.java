@@ -1,4 +1,4 @@
-package testWebMagic;
+package testZipper;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
