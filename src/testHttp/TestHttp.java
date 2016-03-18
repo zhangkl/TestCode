@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -18,32 +17,6 @@ import java.util.Vector;
 public class TestHttp {
     private String defaultContentEncoding;
 
-
-    public static void main(String[] args) {
-        try {
-            TestHttp request = new TestHttp();
-            request.setDefaultContentEncoding("utf-8");
-            Map map = new HashMap();
-            /*map.put("staBankname","北京分行");
-            map.put("secBankname","北京昌平支行");
-            map.put("brName","");*/
-            //map.put("brzo","00115-00200");
-            String url = "http://shixin.court.gov.cn/index_publish_new.jsp";
-            HttpRespons hr = request.send(url, "POST", map, null);
-
-            System.out.println(hr.getUrlString());
-            System.out.println(hr.getProtocol());
-            System.out.println(hr.getHost());
-            System.out.println(hr.getPort());
-            System.out.println(hr.getContentEncoding());
-            System.out.println(hr.getMethod());
-
-            System.out.println(hr.getContent());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
     /**
      * 发送GET请求
      *
@@ -127,7 +100,7 @@ public class TestHttp {
      * @return 响映对象
      * @throws IOException
      */
-    private HttpRespons send(String urlString, String method,
+    public HttpRespons send(String urlString, String method,
                              Map<String, String> parameters, Map<String, String> propertys)
             throws IOException {
         HttpURLConnection urlConnection = null;
@@ -185,6 +158,7 @@ public class TestHttp {
         String ecod = urlConnection.getContentEncoding();
         if (ecod == null)
             ecod = this.defaultContentEncoding;
+
 
         try {
             InputStream in = urlConnection.getInputStream();
