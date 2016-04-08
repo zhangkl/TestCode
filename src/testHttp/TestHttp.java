@@ -15,7 +15,7 @@ import java.util.Vector;
  * @author OUWCH
  */
 public class TestHttp {
-    private String defaultContentEncoding;
+    private String defaultContentEncoding = "UTF-8";
 
     /**
      * 发送GET请求
@@ -119,12 +119,20 @@ public class TestHttp {
             urlString += param;
         }
         URL url = new URL(urlString);
-        urlConnection = (HttpURLConnection) url.openConnection();
 
+        urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setRequestMethod(method);
         urlConnection.setDoOutput(true);
         urlConnection.setDoInput(true);
         urlConnection.setUseCaches(false);
+        urlConnection.setRequestProperty( "User-Agent" , "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36" );
+        urlConnection.setRequestProperty( "Connection" , "keep-alive" );
+        urlConnection.setRequestProperty( "Content-Type" , "text/html" );
+        urlConnection.setRequestProperty( "Cache-control" , "no-cache, no-store" );
+        urlConnection.setRequestProperty( "Host" , "www.wdzj.com" );
+        urlConnection.setConnectTimeout( 20000 );
+        urlConnection.setReadTimeout( 20000 );
+
 
         if (propertys != null)
             for (String key : propertys.keySet()) {
@@ -216,6 +224,10 @@ public class TestHttp {
      */
     public void setDefaultContentEncoding(String defaultContentEncoding) {
         this.defaultContentEncoding = defaultContentEncoding;
+    }
+
+    public static void main(String[] args) {
+
     }
 }
 

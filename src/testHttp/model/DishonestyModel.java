@@ -42,7 +42,7 @@ public class DishonestyModel {
     private Date dregdate;
     private String sgistunit;
     private String sperformedpart;
-    private String sunperformpart;
+    private Timestamp sunperformpart;
     private String spublishdatestamp;
     private String ssiteid;
 
@@ -330,11 +330,11 @@ public class DishonestyModel {
 
     @Basic
     @Column(name = "SUNPERFORMPART")
-    public String getSunperformpart() {
+    public Timestamp getSunperformpart() {
         return sunperformpart;
     }
 
-    public void setSunperformpart(String sunperformpart) {
+    public void setSunperformpart(Timestamp sunperformpart) {
         this.sunperformpart = sunperformpart;
     }
 
@@ -440,5 +440,42 @@ public class DishonestyModel {
         result = 31 * result + (spublishdatestamp != null ? spublishdatestamp.hashCode() : 0);
         result = 31 * result + (ssiteid != null ? ssiteid.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "DishonestyModel{" +
+                "iid=" + iid +
+                ", sstdstg='" + sstdstg + '\'' +
+                ", sstdstl='" + sstdstl + '\'' +
+                ", dupdateTime=" + dupdateTime +
+                ", sloc='" + sloc + '\'' +
+                ", dlastmod=" + dlastmod +
+                ", schangefreq='" + schangefreq + '\'' +
+                ", spriority='" + spriority + '\'' +
+                ", ssitelink='" + ssitelink + '\'' +
+                ", siname='" + siname + '\'' +
+                ", stype='" + stype + '\'' +
+                ", scardnum='" + scardnum + '\'' +
+                ", scasecode='" + scasecode + '\'' +
+                ", iage=" + iage +
+                ", ssexy='" + ssexy + '\'' +
+                ", sfocusnumber='" + sfocusnumber + '\'' +
+                ", sareaname='" + sareaname + '\'' +
+                ", sbusinessentity='" + sbusinessentity + '\'' +
+                ", scourtname='" + scourtname + '\'' +
+                ", sduty='" + sduty + '\'' +
+                ", sperformance='" + sperformance + '\'' +
+                ", sdisrupttypename='" + sdisrupttypename + '\'' +
+                ", dpublishdate=" + dpublishdate +
+                ", spartytypename='" + spartytypename + '\'' +
+                ", sgistid='" + sgistid + '\'' +
+                ", dregdate=" + dregdate +
+                ", sgistunit='" + sgistunit + '\'' +
+                ", sperformedpart='" + sperformedpart + '\'' +
+                ", sunperformpart='" + sunperformpart + '\'' +
+                ", spublishdatestamp='" + spublishdatestamp + '\'' +
+                ", ssiteid='" + ssiteid + '\'' +
+                '}';
     }
 }

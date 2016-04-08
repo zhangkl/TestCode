@@ -12,8 +12,9 @@ public class ReadWriteFileWithEncode {
         if(!file.exists())
             file.createNewFile();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(file), encoding));
+                new FileOutputStream(file,true), encoding));
         writer.append(content);
+        writer.newLine();
         writer.close();
     }
 

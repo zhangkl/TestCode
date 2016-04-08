@@ -23,55 +23,37 @@ import java.util.Map;
  * Time: 17:31
  * To change this template use File | Settings | File Templates.
  */
-public class Test implements Runnable {
+public class Test_ENT implements Runnable {
     private static Logger logger = Logger.getLogger("Test_4.class");
-
+    private static String[] areaName = {"北京","天津","河北","山西","内蒙古","吉林","黑龙江","上海","江苏","浙江","安徽","福建","江西","山东","河南","湖北","湖南","广东","广西","海南","重庆","四川","贵州","云南","西藏","陕西","甘肃","青海","宁夏","新疆","香港","澳门","台湾"};
+    private static String[] cardNumArray = {"0","1","2","3","4","5","6","7","8","9","x"};
     private int sucessCount = 0;
     private long dateCount = 0;
     TestConn testConn;
     Statement statement;
     Statement statement2;
-    int start;
-    int end;
+    String cardNum;
     int pn;
 
-    public Test(int sucessCount, long dateCount, TestConn testConn, Statement statement, Statement statement2, int start, int end,int pn) {
+    public Test_ENT(int sucessCount, long dateCount, TestConn testConn, Statement statement, Statement statement2, String cardNum, int pn) {
         this.sucessCount = sucessCount;
         this.dateCount = dateCount;
         this.testConn = testConn;
         this.statement = statement;
         this.statement2 = statement2;
-        this.start = start;
-        this.end = end;
+        this.cardNum = cardNum;
         this.pn = pn;
     }
 
     public static void main(String[] args) {
         try {
-            /*for (int i = 0; i < 10000; i+=50) {
+            for (int i = 0; i < cardNumArray.length; i++) {
                 TestConn testConn = new TestConn();
-                Test_4 test4 = new Test_4(0, 0, testConn,testConn.creatStatement(),testConn.creatStatement(),i,i+50);
+                Test_ENT test4 = new Test_ENT(0, 0, testConn,testConn.creatStatement(),testConn.creatStatement(),cardNumArray[i],0);
                 Thread thread = new Thread(test4);
-                thread.setName("thread:"+i+"--"+(i+50));
+                thread.setName("thread"+i);
                 thread.start();
-            }*/
-            TestConn testConn = new TestConn();
-            Test test = new Test(0, 0, testConn,testConn.creatStatement(),testConn.creatStatement(),1110,1150,500);
-            Thread thread = new Thread(test);
-            thread.setName("thread:1100-1150");
-            thread.start();
-
-            TestConn testConn1 = new TestConn();
-            Test test1 = new Test(0, 0, testConn1,testConn1.creatStatement(),testConn1.creatStatement(),859,900,100);
-            Thread thread1 = new Thread(test1);
-            thread1.setName("thread:850-900");
-            thread1.start();
-
-            TestConn testConn2 = new TestConn();
-            Test test2 = new Test(0, 0, testConn2,testConn2.creatStatement(),testConn2.creatStatement(),259,300,100);
-            Thread thread2 = new Thread(test2);
-            thread2.setName("thread:250-300");
-            thread2.start();
+            }
 
 
         } catch (Exception e) {
@@ -82,10 +64,10 @@ public class Test implements Runnable {
     @Override
     public void run() {
         //System.out.println(Thread.currentThread().getName());
-        getData(start,end);
+        getData(cardNum);
     }
 
-    public void getData(int start,int end) {
+    public void getData(String entCardNum) {
         try {
             TestHttp testHttp = new TestHttp();
             testHttp.setDefaultContentEncoding("utf-8");
@@ -97,13 +79,10 @@ public class Test implements Runnable {
             map.put("oe", "utf-8");
             map.put("format", "json");
             String currentQuery = "";
-            for (int i = start; i < end; i++) {
-                String cartNum = String.valueOf(i);
-                while(cartNum.length()<4){
-                    cartNum = "0"+ cartNum;
-                }
-                currentQuery = cartNum;
-                map.put("cardNum", cartNum);
+            currentQuery = entCardNum;
+            map.put("cardNum", entCardNum);
+            for (int j = 0; j < areaName.length; j++) {
+                map.put("areaName", areaName[j]);
                 do  {
                     map.put("pn", String.valueOf(pn));
                     url = "https://sp0.baidu.com/8aQDcjqpAAV3otqbppnN2DJv/api.php";
@@ -120,17 +99,18 @@ public class Test implements Runnable {
                      * 数据大于两千，百度取得数据为空
                      */
                     if (dateCount >= 2000) {
-                        String str = Thread.currentThread().getName()+":"+"查询条件:" + cartNum + ",pn:" + pn + ",当前查询条件总条数:" + dateCount;
-                        logger.error(str);
+                        String str = Thread.currentThread().getName()+":"+"查询条件:" + currentQuery + "," + areaName[j] + ",pn:" + pn + ",当前查询条件总条数:" + dateCount;
+                        logger.info(str);
+                        ReadWriteFileWithEncode.write("D:\\code\\TestCode\\logs\\ent\\"+Thread.currentThread().getName()+".txt",str,"UTF-8");
                         break;
                     }
-                    String str = Thread.currentThread().getName()+":"+"查询条件:" + cartNum + ",pn:" + pn + ",目前成功插入条数:" + sucessCount + ",当前查询条件总条数:" + dateCount;
+                    String str = Thread.currentThread().getName()+":"+"查询条件:" + currentQuery + "," + areaName[j] + ",pn:" + pn + ",目前成功插入条数:" + sucessCount + ",当前查询条件总条数:" + dateCount;
                     logger.info(str);
+                    ReadWriteFileWithEncode.write("D:\\code\\TestCode\\logs\\ent\\" + Thread.currentThread().getName() + ".txt",str,"UTF-8");
                     pn += 50;
                 }while(pn<=dateCount);
                 pn = 0;
             }
-            ReadWriteFileWithEncode.write("D:\\code\\TestCode\\logs\\thred.txt",Thread.currentThread().getName() + ":循环结束。最后一次查询为：" + currentQuery,"UTF-8");
         } catch (Exception e) {
             e.printStackTrace();
         }

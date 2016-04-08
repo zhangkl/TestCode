@@ -1,19 +1,42 @@
 <?xml version='1.0' encoding='utf-8'?>
+
 <!DOCTYPE hibernate-configuration PUBLIC
-    "-//Hibernate/Hibernate Configuration DTD//EN"
-    "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
 <hibernate-configuration>
-  <session-factory>
-      <property name="hibernate.connection.driver_class">oracle.jdbc.driver.OracleDriver</property><!-- 驱动 -->
-      <property name="hibernate.connection.url">jdbc:oracle:thin:@192.168.0.196:1521:cred</property><!-- 默认连接数据库test以及默认端口3306 -->
-      <property name="hibernate.connection.username">cred</property><!-- 用户名 -->
-      <property name="hibernate.connection.password">cred</property><!-- 密码 -->
-      <property name="hibernate.dialect">org.hibernate.dialect.Oracle9iDialect</property><!-- 方言 -->
-      <property name="show_sql">false</property><!-- 是否后台打印语句 -->
-      <property name="hibernate.current_session_context_class">thread</property>
 
-      <mapping class="testHttp.model.DishonestyModel"/>
-      <mapping resource="testHttp/model/DishonestyModel.hbm.xml"/>
-  </session-factory>
+    <session-factory>
+        <!-- 指定数据库所用到的驱动 -->
+        <property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
+        <!-- 指定数据库链接的url，hibernate链接的数据库名 -->
+        <property name="hibernate.connection.url">jdbc:oracle:thin:@192.168.0.196:1521:cred</property>
+        <!-- 指定连接数据库的用户名 -->
+        <property name="connection.username">cred</property>
+        <!-- 指定连接数据库的用户口令 -->
+        <property name="connection.password">cred</property>
+        <!-- 指定连接池里的最大连接数 -->
+        <property name="hibernate.c3p0.maxsize">20</property>
+        <!-- 指定连接池里最小连接数 -->
+        <property name="hibernate.cp30.minsize">1</property>
+        <!-- 指定连接池里的超时时常 -->
+        <property name="hibernate.cp30.timeout">50</property>
+        <!-- 指定连接池里最大缓存多少个Statement对象 -->
+        <property name="hibernate.cp30.max_statements">100</property>
+        <property name="hibernate.cp30.idle_test_period">3000</property>
+        <property name="hibernate.cp30.acquire_increment">2</property>
+        <property name="hibernate.cp30.validate">true</property>
+        <!-- 指定数据库方言 -->
+        <property name="dialect">org.hibernate.dialect.Oracle9iDialect</property>
+        <!-- Disable the second-level cache  -->
+        <!--<property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>-->
+        <!-- 根据需要自动创建数据库表 -->
+        <property name="hbm2ddl.auto">update</property>
+        <property name="show_sql">true</property>
+        <property name="hibernate.current_session_context_class">thread</property>
+        <!-- 罗列所有映射文件 -->
+        <mapping resource="testHttp/model/DishonestyModel.hbm.xml"/>
+
+    </session-factory>
+
 </hibernate-configuration>
-

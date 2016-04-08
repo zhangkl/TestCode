@@ -23,7 +23,7 @@ import java.util.Map;
  * Time: 17:31
  * To change this template use File | Settings | File Templates.
  */
-public class Test implements Runnable {
+public class Test_4 implements Runnable {
     private static Logger logger = Logger.getLogger("Test_4.class");
 
     private int sucessCount = 0;
@@ -35,7 +35,7 @@ public class Test implements Runnable {
     int end;
     int pn;
 
-    public Test(int sucessCount, long dateCount, TestConn testConn, Statement statement, Statement statement2, int start, int end,int pn) {
+    public Test_4(int sucessCount, long dateCount, TestConn testConn, Statement statement, Statement statement2, int start,int end,int pn) {
         this.sucessCount = sucessCount;
         this.dateCount = dateCount;
         this.testConn = testConn;
@@ -56,23 +56,28 @@ public class Test implements Runnable {
                 thread.start();
             }*/
             TestConn testConn = new TestConn();
-            Test test = new Test(0, 0, testConn,testConn.creatStatement(),testConn.creatStatement(),1110,1150,500);
+            Test_4 test = new Test_4(0, 0, testConn,testConn.creatStatement(),testConn.creatStatement(),2110,2150,700);
             Thread thread = new Thread(test);
-            thread.setName("thread:1100-1150");
+            thread.setName("thread:2100-2150");
             thread.start();
 
             TestConn testConn1 = new TestConn();
-            Test test1 = new Test(0, 0, testConn1,testConn1.creatStatement(),testConn1.creatStatement(),859,900,100);
+            Test_4 test1 = new Test_4(0, 0, testConn1,testConn1.creatStatement(),testConn1.creatStatement(),1911,1950,100);
             Thread thread1 = new Thread(test1);
-            thread1.setName("thread:850-900");
+            thread1.setName("thread:1900-1950");
             thread1.start();
 
             TestConn testConn2 = new TestConn();
-            Test test2 = new Test(0, 0, testConn2,testConn2.creatStatement(),testConn2.creatStatement(),259,300,100);
+            Test_4 test2 = new Test_4(0, 0, testConn2,testConn2.creatStatement(),testConn2.creatStatement(),1811,1850,500);
             Thread thread2 = new Thread(test2);
-            thread2.setName("thread:250-300");
+            thread2.setName("thread:1800-1850");
             thread2.start();
 
+            TestConn testConn3 = new TestConn();
+            Test_4 test3 = new Test_4(0, 0, testConn3,testConn3.creatStatement(),testConn3.creatStatement(),1410,1450,1050);
+            Thread thread3 = new Thread(test3);
+            thread3.setName("thread:1400-1450");
+            thread3.start();
 
         } catch (Exception e) {
             e.printStackTrace();
