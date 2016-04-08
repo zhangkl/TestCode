@@ -120,7 +120,7 @@ public class HttpRespons {
     }   
     
     public String getUserInfo() {   
-        return userInfo;   
+        return userInfo;
     }   
     
 } 
