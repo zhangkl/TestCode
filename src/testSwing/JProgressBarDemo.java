@@ -72,7 +72,6 @@ public class JProgressBarDemo {
          */
         jf.setVisible(false); //隐藏窗体  
         jf.dispose();         //释放资源,关闭窗体  
-        jf = null;            //若不再使用了就这样  
     }
 
 
