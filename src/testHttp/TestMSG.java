@@ -18,7 +18,7 @@ import java.net.URL;
  */
 public class TestMSG {
     public static void main(String[] args) throws IOException, InterruptedException {
-        String url = "http://www.vipai.com/index.php?ctl=ajax&mobile=18617128423&act=send_mobile_verify";
+        String url = "http://www.vipai.com/index.php?ctl=ajax&field_data=18617128423&act=check_field&field_name=mobile";
         while (true) {
             HttpURLConnection testHttp = (HttpURLConnection) new URL(url).openConnection();
             InputStream in = testHttp.getInputStream();
@@ -26,6 +26,7 @@ public class TestMSG {
                     new InputStreamReader(in,"UTF-8"));
             String line = bufferedReader.readLine();
             bufferedReader.close();
+            System.out.println(line);
             line = line.substring(line.indexOf("{"));
             JSONObject jsonObject = JSONObject.fromObject(line);
             String status = jsonObject.get("status")+"";
