@@ -125,11 +125,24 @@ public class TestHttp {
         urlConnection.setDoOutput(true);
         urlConnection.setDoInput(true);
         urlConnection.setUseCaches(false);
-        urlConnection.setRequestProperty( "User-Agent" , "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36" );
+        urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36");
         urlConnection.setRequestProperty( "Connection" , "keep-alive" );
         urlConnection.setRequestProperty( "Content-Type" , "text/html" );
         urlConnection.setRequestProperty( "Cache-control" , "no-cache, no-store" );
         urlConnection.setRequestProperty( "Host" , "www.wdzj.com" );
+        urlConnection.setRequestProperty("userValue", "4c9146f9-08b2-bd3c-5a28-75ebf42e684e");
+        urlConnection.setRequestProperty("hide-download-panel", "1");
+        urlConnection.setRequestProperty("gr_session_id_955c17a7426f3e98", "357b464b-b9c5-4fe3-9ae3-2ecdfd869e63");
+        urlConnection.setRequestProperty("Hm_lvt_52d64b8d3f6d42a2e416d59635df3f71", "1461547655");
+        urlConnection.setRequestProperty("Hm_lpvt_52d64b8d3f6d42a2e416d59635df3f71", "1461651647");
+        urlConnection.setRequestProperty("__qc__k", "TC_MK=CB13A6DE66AB1E38885B9F42D47AE29F");
+        urlConnection.setRequestProperty("pgv_pvid", "8052484779");
+        urlConnection.setRequestProperty("__qc_wId", "728");
+        urlConnection.setRequestProperty("aliyungf_tc", "AQAAANmn42Cw5gkAWiUnahkDzq51GmU7");
+        urlConnection.setRequestProperty("gr_user_id", "53ba8ddf-6ad6-4245-94cc-719f11da1833");
+        urlConnection.setRequestProperty("connect.sid", "s%3AXzxvNBR748DHeMQFFkyhsq2I8hxJ0kTs.LSQY6BdwXMTC9WHW40cmC2tmSOJ%2BqGufxkriMKV47CM");
+        urlConnection.setRequestProperty("login_returnurl", "http%3A//www.qixin.com");
+        urlConnection.setRequestProperty("userKey", "QXBAdmin-Web2.0_5tUrhr/6EVtLT+GVfE+vU8k330y+oPICCM6jhUGEoLc%3D");
         urlConnection.setConnectTimeout( 20000 );
         urlConnection.setReadTimeout( 20000 );
 

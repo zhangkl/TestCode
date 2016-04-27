@@ -21,6 +21,8 @@ import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
@@ -38,7 +40,7 @@ public class HtmlParser {
         myParser.setEncoding("UTF-8");
         NodeList nodeList = myParser.extractAllNodesThatMatch(new NodeFilter() {
             public boolean accept(Node node) {
-                return node instanceof Tag && !((Tag)node).isEndTag() && ((Tag)node).getTagName().equals("DIV") && ((Tag)node).getAttribute("class") != null && ((Tag)node).getAttribute("class").equals("w_box");
+                return node instanceof Tag && !((Tag) node).isEndTag() && ((Tag) node).getTagName().equals("DIV") && ((Tag) node).getAttribute("class") != null && ((Tag) node).getAttribute("class").equals("w_box");
             }
         });
         Node node = nodeList.elementAt(1);
@@ -53,14 +55,14 @@ public class HtmlParser {
         SimpleNodeIterator it = nodeList.elements();
         this.getConnection();
 
-        while(it.hasMoreNodes()) {
-            LinkTag node = (LinkTag)it.nextNode();
+        while (it.hasMoreNodes()) {
+            LinkTag node = (LinkTag) it.nextNode();
             String href = node.getLink();
             String title = node.getLinkText();
             logger.info("分析首页新闻【" + title + "】，链接地址【" + href + "】");
 
             try {
-                if(!this.newsExist(title)) {
+                if (!this.newsExist(title)) {
                     this.insertDataBase(title, this.extractContent(href));
                 } else {
                     logger.info("新闻【" + title + "】数据库中已经存在，忽略进入下一个新闻分析！");
@@ -84,7 +86,7 @@ public class HtmlParser {
             pe.setEncoding("GBK");
             NodeList nodeList = pe.extractAllNodesThatMatch(new NodeFilter() {
                 public boolean accept(Node node) {
-                    return node instanceof Tag && !((Tag)node).isEndTag() && ((Tag)node).getTagName().equals("DIV") && ((Tag)node).getAttribute("class") != null && ((Tag)node).getAttribute("class").equals("cs_content");
+                    return node instanceof Tag && !((Tag) node).isEndTag() && ((Tag) node).getTagName().equals("DIV") && ((Tag) node).getAttribute("class") != null && ((Tag) node).getAttribute("class").equals("cs_content");
                 }
             });
             int size = nodeList.size();
@@ -106,10 +108,10 @@ public class HtmlParser {
         NodeList nodeList = myParser.extractAllNodesThatMatch(new TagNameFilter("a"));
         SimpleNodeIterator it = nodeList.elements();
 
-        while(it.hasMoreNodes()) {
-            LinkTag node = (LinkTag)it.nextNode();
+        while (it.hasMoreNodes()) {
+            LinkTag node = (LinkTag) it.nextNode();
             logger.info("移除新闻内容中包含的文字、图片的链接【" + node.toHtml() + "】。");
-            if(node.getLink().indexOf("cheshi.com") > -1) {
+            if (node.getLink().indexOf("cheshi.com") > -1) {
                 content = content.replace(node.toHtml(), node.getStringText());
             }
         }
@@ -121,7 +123,7 @@ public class HtmlParser {
 
     public String downloadImages(String content, String uploadImgPath, String localhost) throws ParserException {
         File f = new File(uploadImgPath);
-        if(!f.exists()) {
+        if (!f.exists()) {
             f.mkdirs();
         }
 
@@ -130,8 +132,8 @@ public class HtmlParser {
         NodeList nodeList = myParser.extractAllNodesThatMatch(new TagNameFilter("img"));
         SimpleNodeIterator it = nodeList.elements();
 
-        while(it.hasMoreNodes()) {
-            Tag tag = (Tag)it.nextNode();
+        while (it.hasMoreNodes()) {
+            Tag tag = (Tag) it.nextNode();
             String src = tag.getAttribute("src");
             String filename = src.substring(src.lastIndexOf("/") + 1);
             InputStream is = null;
@@ -145,7 +147,7 @@ public class HtmlParser {
                 fos = new FileOutputStream(uploadImgPath + "/" + filename);
 
                 int bytesRead1;
-                while((bytesRead1 = is.read(buff, 0, buff.length)) != -1) {
+                while ((bytesRead1 = is.read(buff, 0, buff.length)) != -1) {
                     fos.write(buff, 0, bytesRead1);
                 }
 
@@ -156,11 +158,11 @@ public class HtmlParser {
                 var27.printStackTrace();
             } finally {
                 try {
-                    if(fos != null) {
+                    if (fos != null) {
                         fos.close();
                     }
 
-                    if(is != null) {
+                    if (is != null) {
                         is.close();
                     }
                 } catch (IOException var25) {
@@ -192,7 +194,7 @@ public class HtmlParser {
 
     public void closeConnection() {
         try {
-            if(this.conn != null && !this.conn.isClosed()) {
+            if (this.conn != null && !this.conn.isClosed()) {
                 this.conn.close();
             }
         } catch (SQLException var2) {
@@ -214,7 +216,7 @@ public class HtmlParser {
             throw var12;
         } finally {
             try {
-                if(pstmt != null) {
+                if (pstmt != null) {
                     pstmt.close();
                 }
             } catch (SQLException var11) {
@@ -237,7 +239,7 @@ public class HtmlParser {
             throw var13;
         } finally {
             try {
-                if(pstmt != null) {
+                if (pstmt != null) {
                     pstmt.close();
                 }
             } catch (SQLException var12) {
@@ -249,19 +251,14 @@ public class HtmlParser {
         return var4;
     }
 
-    public static void main(String[] args) throws IOException, ParserException {
-        Parser parser = new Parser("http://www.wdzj.com/dangan/phw/");
-        parser.setEncoding("utf-8");
-        AndFilter divFilter = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "bd peopleBd"));
-        HasParentFilter pFilter = new HasParentFilter(divFilter);
-        TagNameFilter tagFilter = new TagNameFilter("ul");
-        AndFilter andFilter = new AndFilter(tagFilter, pFilter);
-        NodeList nodes = parser.extractAllNodesThatMatch(andFilter);
-        String html = nodes.asHtml();
-        System.out.println(html);
-        System.out.println(html.substring(html.indexOf("<span class=\"name\">", 1) + 19, html.indexOf("</span></p>", html.indexOf("<span class=\"name\">", 1) + 19)));
-        System.out.println(html.substring(html.indexOf("<span class=\"gray\">", 1) + 19, html.indexOf("</span></p>", html.indexOf("<span class=\"gray\">", 1) + 19)));
-        System.out.println(html.substring(html.indexOf("<p>", html.indexOf("<span class=\"gray\">", 1) + 19) + 3, html.indexOf("</p>", html.indexOf("<span class=\"gray\">", 1) + 19) + 3));
+    public static void main(String[] args) throws IOException, ParserException, InterruptedException {
+        System.out.println(login());
+        for (int i = 1; i < 10; i++) {
+            String url = "http://www.qixin.com/search/prov/LN_2114?page=1";
+            HttpRespons hr = new TestHttp().send(url, "GET", null, null);
+            String result = hr.getContent();
+            System.out.println(getLink("", result));
+        }
     }
 
     public static Map<String, String> getData(String url, String content, NodeFilter nodeFilter) {
@@ -269,20 +266,20 @@ public class HtmlParser {
 
         try {
             Parser e;
-            if(StringHelper.isNotEmpty(url)) {
+            if (StringHelper.isNotEmpty(url)) {
                 e = new Parser(url);
             } else {
                 e = new Parser();
             }
 
-            if(content != null) {
+            if (content != null) {
                 e.setInputHTML(content);
             }
 
             e.setEncoding("utf-8");
             NodeList nodes = e.extractAllNodesThatMatch(nodeFilter);
 
-            for(int divFilter = 1; divFilter < nodes.size(); ++divFilter) {
+            for (int divFilter = 1; divFilter < nodes.size(); ++divFilter) {
                 String divnodes = nodes.elementAt(divFilter).toPlainTextString().trim();
                 String filters = nodes.elementAt(divFilter).getChildren().elementAt(0).toPlainTextString().trim();
                 map.put(filters, divnodes);
@@ -296,7 +293,7 @@ public class HtmlParser {
             var16[2] = new TagNameFilter("p");
             NodeList componynodes = e.extractAllNodesThatMatch(nodeFilter);
 
-            for(int i = 1; i < componynodes.size(); ++i) {
+            for (int i = 1; i < componynodes.size(); ++i) {
                 String value = componynodes.elementAt(i).toPlainTextString().trim();
                 String describe = componynodes.elementAt(i).getChildren().elementAt(0).toPlainTextString().trim();
                 map.put(describe, value);
@@ -310,21 +307,27 @@ public class HtmlParser {
         return map;
     }
 
-    public static List<Map<String, String>> getLink(String url) {
+    public static List<Map<String, String>> getLink(String url, String cons) {
         ArrayList list = new ArrayList();
 
         try {
-            Parser e = new Parser(url);
+            Parser e;
+            if (StringHelper.isNotEmpty(url)) {
+                e = new Parser(url);
+            } else {
+                e = new Parser();
+                e.setInputHTML(cons);
+            }
+
             e.setEncoding("utf-8");
-            NodeFilter[] filters = new NodeFilter[]{new AndFilter(new TagNameFilter("span"), new HasAttributeFilter("class", "name")), null, null};
-            filters[1] = new HasParentFilter(filters[0]);
-            filters[2] = new TagNameFilter("a");
-            AndFilter contentFilter = new AndFilter(filters[1], filters[2]);
+            NodeFilter filter1 = new HasAttributeFilter("class", "search-result-title");
+            NodeFilter filter2 = new TagNameFilter("a");
+            AndFilter contentFilter = new AndFilter(filter1, filter2);
             NodeList nodes2 = e.extractAllNodesThatMatch(contentFilter);
 
-            for(int i = 0; i < nodes2.size(); ++i) {
+            for (int i = 0; i < nodes2.size(); ++i) {
                 HashMap map = new HashMap();
-                LinkTag linkTag = (LinkTag)nodes2.elementAt(i);
+                LinkTag linkTag = (LinkTag) nodes2.elementAt(i);
                 map.put("link", linkTag.getLink());
                 map.put("linkText", linkTag.getLinkText());
                 list.add(map);
@@ -340,15 +343,15 @@ public class HtmlParser {
         StringBuffer urlString = new StringBuffer(url);
         int k = 0;
 
-        for(Iterator i$ = map.keySet().iterator(); i$.hasNext(); ++k) {
-            String key = (String)i$.next();
-            if(k == 0) {
+        for (Iterator i$ = map.keySet().iterator(); i$.hasNext(); ++k) {
+            String key = (String) i$.next();
+            if (k == 0) {
                 urlString.append("?");
             } else {
                 urlString.append("&");
             }
 
-            urlString.append(key).append("=").append((String)map.get(key));
+            urlString.append(key).append("=").append((String) map.get(key));
         }
 
         return urlString.toString();
@@ -363,33 +366,33 @@ public class HtmlParser {
 
         try {
             Parser e;
-            if(StringHelper.isNotEmpty(url)) {
+            if (StringHelper.isNotEmpty(url)) {
                 e = new Parser(url);
             } else {
                 e = new Parser();
             }
 
-            if(StringHelper.isNotEmpty(content)) {
+            if (StringHelper.isNotEmpty(content)) {
                 e.setInputHTML(content);
             }
 
             nodeList = e.extractAllNodesThatMatch(tableFilter);
 
-            for(int i = 0; i <= nodeList.size(); ++i) {
-                if(nodeList.elementAt(i) instanceof TableTag) {
-                    TableTag tag = (TableTag)nodeList.elementAt(i);
+            for (int i = 0; i <= nodeList.size(); ++i) {
+                if (nodeList.elementAt(i) instanceof TableTag) {
+                    TableTag tag = (TableTag) nodeList.elementAt(i);
                     TableRow[] rows = tag.getRows();
 
-                    for(int j = 0; j < rows.length; ++j) {
+                    for (int j = 0; j < rows.length; ++j) {
                         ArrayList tdlist = new ArrayList();
                         TableRow tr = rows[j];
                         TableColumn[] td = tr.getColumns();
 
-                        for(int k = 0; k < td.length; ++k) {
+                        for (int k = 0; k < td.length; ++k) {
                             tdlist.add(td[k].toPlainTextString().trim());
                         }
 
-                        if(tdlist.size() > 0) {
+                        if (tdlist.size() > 0) {
                             trlist.add(tdlist);
                         }
                     }
@@ -401,5 +404,88 @@ public class HtmlParser {
         }
 
         return trlist;
+    }
+
+    public static String login() throws MalformedURLException, InterruptedException {
+        //Thread.sleep(3000000);
+        String htmlurl = "https://www.linkedin.com/uas/login-submit";
+        HttpURLConnection httpConn = null;
+        String cookie = "";
+        try {
+            URL url = new URL(htmlurl);
+
+            httpConn = (HttpURLConnection) url.openConnection();
+
+            HttpURLConnection.setFollowRedirects(true);
+            httpConn.setRequestMethod("POST");
+            httpConn.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36");
+            httpConn.setRequestProperty("Connection", "keep-alive");
+            httpConn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml");
+            httpConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            httpConn.setRequestProperty("Cache-control", "no-cache, no-store");
+            httpConn.setRequestProperty("Host", "www.linkedin.com");
+            //httpConn.setRequestProperty("Referer","https://www.linkedin.com/uas/login?session_redirect=http://www.linkedin.com/profile/view?id=222323610&authType=name&authToken=fcEe");
+            //post方法，重定向设置
+            httpConn.setDoOutput(true);
+            httpConn.setDoInput(true);
+            httpConn.setUseCaches(false);
+            httpConn.setInstanceFollowRedirects(true);
+            //写入，post方法必须用流写入的方式传输数据
+            StringBuffer str_buf = new StringBuffer(4096);
+            OutputStream os = httpConn.getOutputStream();
+            str_buf.append("session_key").append("=335627901").append("email").append("&");
+            str_buf.append("session_password").append("=").append("gmail").append("&");
+            //str_buf.append("session_redirect").append("=").append(redictURL);
+            os.write(str_buf.toString().getBytes());
+            os.flush();
+            os.close();
+            httpConn.setConnectTimeout(20000);
+            httpConn.setReadTimeout(20000);
+            //获取重定向和cookie
+            //String redictURL= httpConn.getHeaderField( "Location" );
+            //System.out.println("第一次请求重定向地址 location="+redictURL);
+
+            //获取cookie
+            Map<String, List<String>> map = httpConn.getHeaderFields();
+            //System.out.println(map.toString());
+            Set<String> set = map.keySet();
+            for (Iterator<String> iterator = set.iterator(); iterator.hasNext(); ) {
+                String key = iterator.next();
+                if (key != null) {
+                    if (key.equals("Set-Cookie")) {
+                        System.out.println("key=" + key + ",开始获取cookie");
+                        List<String> list = map.get(key);
+                        for (String str : list) {
+                            String temp = str.split("=")[0];
+                            //System.out.println(temp);
+                            //cookie包含到信息非常多，调试发现登录只需这条信息
+                            if (temp.equals("li_at")) {
+                                cookie = str;
+                                return cookie;
+                            }
+
+                        }
+                    }
+                }
+
+            }
+            httpConn.disconnect();
+
+        } catch (final MalformedURLException me) {
+            System.out.println("url不存在!");
+            me.getMessage();
+            throw me;
+        } catch (final FileNotFoundException me) {
+            System.out.println(htmlurl + "反爬启动");
+            return "0";
+        } catch (final IOException e) {
+            e.printStackTrace();
+            System.out.println("反爬启动:" + htmlurl + "次数:");
+            httpConn.disconnect();
+            Thread.sleep(20000);
+            return login();
+        }
+
+        return cookie;
     }
 }
