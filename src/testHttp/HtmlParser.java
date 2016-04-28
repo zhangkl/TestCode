@@ -257,6 +257,7 @@ public class HtmlParser {
             HttpRespons hr = new TestHttp().send(url, "GET", null, null);
             String result = hr.getContent();
             System.out.println(getLink("", result));
+
         }
     }
 
