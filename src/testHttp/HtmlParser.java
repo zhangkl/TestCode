@@ -252,7 +252,6 @@ public class HtmlParser {
     }
 
     public static void main(String[] args) throws IOException, ParserException, InterruptedException {
-        System.out.println(login());
         for (int i = 1; i < 10; i++) {
             String url = "http://www.qixin.com/search/prov/LN_2114?page=1";
             HttpRespons hr = new TestHttp().send(url, "GET", null, null);

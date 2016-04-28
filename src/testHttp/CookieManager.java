@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author <a href="mailto:jingyu@taohua.com">惊羽</a>
  */
-class CookieManager implements Serializable {
+public class CookieManager implements Serializable {
     private static final long serialVersionUID = 292218695837624307L;
     private static CookieManager cookieManager = new CookieManager();
     private Map<String, Map<String, String>> cookies = new ConcurrentHashMap<String, Map<String, String>>();
@@ -106,4 +106,9 @@ class CookieManager implements Serializable {
      * 存储域名与其顶级域名之间映射关系，避免重复的计算顶级域名
      */
     private Map<String, String> domainToTopLevelDomainMap = new ConcurrentHashMap<String, String>();
+
+    public static void main(String[] args) {
+        String str = new CookieManager().getCookies("http://www.qixin.com/login");
+        System.out.println(str);
+    }
 }
