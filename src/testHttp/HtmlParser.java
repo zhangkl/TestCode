@@ -253,11 +253,11 @@ public class HtmlParser {
 
     public static void main(String[] args) throws IOException, ParserException, InterruptedException {
         for (int i = 1; i < 10; i++) {
-            String url = "http://www.qixin.com/search/prov/LN_2114?page=1";
+            String url = "http://www.qixin.com/search/prov/LN_2106";
             HttpRespons hr = new TestHttp().send(url, "GET", null, null);
             String result = hr.getContent();
-            System.out.println(getLink("", result));
-
+            System.out.println(result);
+            System.out.println(getLink(url, ""));
         }
     }
 
@@ -314,6 +314,7 @@ public class HtmlParser {
             Parser e;
             if (StringHelper.isNotEmpty(url)) {
                 e = new Parser(url);
+                System.out.println(e.toString());
             } else {
                 e = new Parser();
                 e.setInputHTML(cons);
