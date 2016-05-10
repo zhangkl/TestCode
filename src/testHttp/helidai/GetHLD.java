@@ -1,8 +1,8 @@
 package testHttp.helidai;
 
-import testHttp.HtmlParser;
-import testHttp.HttpRespons;
-import testHttp.TestHttp;
+import testHttp.httpUtil.HtmlParser;
+import testHttp.httpUtil.HttpRespons;
+import testHttp.httpUtil.TestHttp;
 import testHttp.dao.TestConn;
 
 import java.io.IOException;

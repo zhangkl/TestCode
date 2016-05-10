@@ -137,7 +137,7 @@ public class ParserTestCase extends TestCase {
                             + "<input type=’text’ value=’text2′ name=’text2′/>"
                             + "<select><option id=’1′>1</option><option id=’2′>2</option><option id=’3′></option></select>"
                             + "<a href=’http://www.yeeach.com’>yeeach.com</a>"
-                            + "</body>");
+                    + "</body>");
             parser.setEncoding(parser.getEncoding());
             OrFilter lastFilter = new OrFilter(inputFilter,selectFilter);
             nodeList = parser.extractAllNodesThatMatch(lastFilter);
@@ -241,7 +241,7 @@ public class ParserTestCase extends TestCase {
                        System.out.println("visitTag() TitleTag : Tag name is :"
                                 + tag.getTagName() + " /n Class is :"
                                 + tag.getClass() + "/n Text is :"
-                                + tag.getText());
+                               + tag.getText());
                     } else if (tag instanceof LinkTag) {
                        System.out.println("visitTag() LinkTag : Tag name is :"
                                 + tag.getTagName() + " /n Class is :"
@@ -340,7 +340,7 @@ public class ParserTestCase extends TestCase {
              .setInputHTML("<html><head><title>Link Test</title>"
              + "<link href=http://www.yeeach.com/’/test01/css.css’ text=’text/css’ rel=’stylesheet’ />"
              + "<link href=http://www.yeeach.com/’/test02/css.css’ text=’text/css’ rel=’stylesheet’ />"
-             + "</head><body>"
+                     + "</head><body>"
              + "<div id=AA>dafafda</div>"
              +"<div id=A2>CCC</div>"
              +"</body></html>");

@@ -21,9 +21,9 @@ public class Test_Json {
     private static Logger logger = Logger.getLogger("Test_4.class");
     private int sucessCount = 0;
     private long dateCount = 0;
-    TestConn testConn;
-    Statement statement;
-    Statement statement2;
+    public TestConn testConn;
+    public Statement statement;
+    public Statement statement2;
 
     public static void main(String[] args) {
         try {

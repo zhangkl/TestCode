@@ -19,11 +19,8 @@ import org.htmlparser.tags.TableTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
-import testHttp.TestHttp;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
@@ -406,88 +403,5 @@ public class HtmlParser {
         }
 
         return trlist;
-    }
-
-    public static String login() throws MalformedURLException, InterruptedException {
-        //Thread.sleep(3000000);
-        String htmlurl = "https://www.linkedin.com/uas/login-submit";
-        HttpURLConnection httpConn = null;
-        String cookie = "";
-        try {
-            URL url = new URL(htmlurl);
-
-            httpConn = (HttpURLConnection) url.openConnection();
-
-            HttpURLConnection.setFollowRedirects(true);
-            httpConn.setRequestMethod("POST");
-            httpConn.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36");
-            httpConn.setRequestProperty("Connection", "keep-alive");
-            httpConn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml");
-            httpConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            httpConn.setRequestProperty("Cache-control", "no-cache, no-store");
-            httpConn.setRequestProperty("Host", "www.linkedin.com");
-            //httpConn.setRequestProperty("Referer","https://www.linkedin.com/uas/login?session_redirect=http://www.linkedin.com/profile/view?id=222323610&authType=name&authToken=fcEe");
-            //post方法，重定向设置
-            httpConn.setDoOutput(true);
-            httpConn.setDoInput(true);
-            httpConn.setUseCaches(false);
-            httpConn.setInstanceFollowRedirects(true);
-            //写入，post方法必须用流写入的方式传输数据
-            StringBuffer str_buf = new StringBuffer(4096);
-            OutputStream os = httpConn.getOutputStream();
-            str_buf.append("session_key").append("=335627901").append("email").append("&");
-            str_buf.append("session_password").append("=").append("gmail").append("&");
-            //str_buf.append("session_redirect").append("=").append(redictURL);
-            os.write(str_buf.toString().getBytes());
-            os.flush();
-            os.close();
-            httpConn.setConnectTimeout(20000);
-            httpConn.setReadTimeout(20000);
-            //获取重定向和cookie
-            //String redictURL= httpConn.getHeaderField( "Location" );
-            //System.out.println("第一次请求重定向地址 location="+redictURL);
-
-            //获取cookie
-            Map<String, List<String>> map = httpConn.getHeaderFields();
-            //System.out.println(map.toString());
-            Set<String> set = map.keySet();
-            for (Iterator<String> iterator = set.iterator(); iterator.hasNext(); ) {
-                String key = iterator.next();
-                if (key != null) {
-                    if (key.equals("Set-Cookie")) {
-                        System.out.println("key=" + key + ",开始获取cookie");
-                        List<String> list = map.get(key);
-                        for (String str : list) {
-                            String temp = str.split("=")[0];
-                            //System.out.println(temp);
-                            //cookie包含到信息非常多，调试发现登录只需这条信息
-                            if (temp.equals("li_at")) {
-                                cookie = str;
-                                return cookie;
-                            }
-
-                        }
-                    }
-                }
-
-            }
-            httpConn.disconnect();
-
-        } catch (final MalformedURLException me) {
-            System.out.println("url不存在!");
-            me.getMessage();
-            throw me;
-        } catch (final FileNotFoundException me) {
-            System.out.println(htmlurl + "反爬启动");
-            return "0";
-        } catch (final IOException e) {
-            e.printStackTrace();
-            System.out.println("反爬启动:" + htmlurl + "次数:");
-            httpConn.disconnect();
-            Thread.sleep(20000);
-            return login();
-        }
-
-        return cookie;
     }
 }

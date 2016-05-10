@@ -1,18 +1,18 @@
 package testHtmlUtil;
 
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.ScriptResult;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSelect;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.List;
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.ScriptResult;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlOption;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 
 public class WorldBankCrawl {
 
@@ -25,7 +25,7 @@ public class WorldBankCrawl {
         webClient.setAjaxController(new NicelyResynchronizingAjaxController());
         webClient.setJavaScriptTimeout(35000);
         //模拟浏览器打开一个目标网址
-        HtmlPage rootPage= webClient.getPage(TARGET_URL);
+        HtmlPage rootPage = webClient.getPage(TARGET_URL);
         //获取第一个数据库
         HtmlSelect hs = (HtmlSelect) rootPage.getElementById("lstCubes");
         //按要求选择第一个数据库
@@ -38,9 +38,9 @@ public class WorldBankCrawl {
         //跳转到第二个页面，选择国家
         HtmlPage countrySelect = (HtmlPage) sr.getNewPage();
         //获得包含全部国家信息的选择框页面
-        HtmlPage framePage=(HtmlPage)countrySelect.getFrameByName("frmTree1").getEnclosedPage();
-                //获得selectAll按钮，触发js事件
-                framePage.executeJavaScript("javascript:TransferListAll('countrylst’,'countrylstselected’,'no');SetSelectedCount('countrylstselected’,'tdcount');");
+        HtmlPage framePage = (HtmlPage) countrySelect.getFrameByName("frmTree1").getEnclosedPage();
+        //获得selectAll按钮，触发js事件
+        framePage.executeJavaScript("javascript:TransferListAll('countrylst’,'countrylstselected’,'no');SetSelectedCount('countrylstselected’,'tdcount');");
         //获取Next按钮，触发js事件
         ScriptResult electricityScriptResult = framePage.executeJavaScript("javascript:wrapperSetCube('/ddp')");
 
@@ -49,8 +49,8 @@ public class WorldBankCrawl {
         HtmlPage electricitySelect = (HtmlPage) electricityScriptResult.getNewPage();
         //获得electricity选择的iframe
         HtmlPage electricityFrame = (HtmlPage) electricitySelect.getFrameByName("frmTree1").getEnclosedPage();
-                //获得选择框
-                HtmlSelect seriesSelect = (HtmlSelect) electricityFrame.getElementById("countrylst");
+        //获得选择框
+        HtmlSelect seriesSelect = (HtmlSelect) electricityFrame.getElementById("countrylst");
         //获得所有的选择框内容
         List optionList = seriesSelect.getOptions();
         //模拟点击select按钮
@@ -65,8 +65,8 @@ public class WorldBankCrawl {
         HtmlPage timeSelectPage = (HtmlPage) timeScriptResult.getNewPage();
         //获取选中时间的选择框
         timeSelectPage = (HtmlPage) timeSelectPage.getFrameByName("frmTree1").getEnclosedPage();
-                //选中所有的时间
-                timeSelectPage.executeJavaScript("javascript:TransferListAll('countrylst’,'countrylstselected’,'no');SetSelectedCount('countrylstselected’,'tdcount');");
+        //选中所有的时间
+        timeSelectPage.executeJavaScript("javascript:TransferListAll('countrylst’,'countrylstselected’,'no');SetSelectedCount('countrylstselected’,'tdcount');");
         //点击Next按钮
         ScriptResult exportResult = timeSelectPage.executeJavaScript("javascript:wrapperSetCube('/ddp')");
 
@@ -84,9 +84,9 @@ public class WorldBankCrawl {
         InputStream is = downLoadResult.getNewPage().getWebResponse().getContentAsStream();
 
         OutputStream fos = new FileOutputStream("d://test.xls");
-        byte[] buffer=new byte[1024*30];
-        int len=-1;
-        while((len=is.read(buffer))>0){
+        byte[] buffer = new byte[1024 * 30];
+        int len = -1;
+        while ((len = is.read(buffer)) > 0) {
             fos.write(buffer, 0, len);
         }
         fos.close();
