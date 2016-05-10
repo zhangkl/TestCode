@@ -1,4 +1,6 @@
-package testHttp;
+package testHttp.httpUtil;
+
+import testHttp.httpUtil.HttpRespons;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -129,9 +131,9 @@ public class TestHttp {
         urlConnection.setRequestProperty( "Connection" , "keep-alive" );
         urlConnection.setRequestProperty( "Content-Type" , "text/html" );
         urlConnection.setRequestProperty( "Cache-control" , "no-cache, no-store" );
-        /*urlConnection.setRequestProperty( "Host" , "www.wdzj.com" );
+        urlConnection.setRequestProperty( "Host" , "www.wdzj.com" );
         urlConnection.setRequestProperty("userValue", "4c9146f9-08b2-bd3c-5a28-75ebf42e684e");
-        urlConnection.setRequestProperty("hide-download-panel", "1");*/
+        urlConnection.setRequestProperty("hide-download-panel", "1");
         /*urlConnection.setRequestProperty("gr_session_id_955c17a7426f3e98", "357b464b-b9c5-4fe3-9ae3-2ecdfd869e63");
         urlConnection.setRequestProperty("Hm_lvt_52d64b8d3f6d42a2e416d59635df3f71", "1461547655");
         urlConnection.setRequestProperty("Hm_lpvt_52d64b8d3f6d42a2e416d59635df3f71", "1461651647");

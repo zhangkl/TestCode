@@ -1,5 +1,8 @@
-package testHttp;
+package testHttp.helidai;
 
+import testHttp.HtmlParser;
+import testHttp.HttpRespons;
+import testHttp.TestHttp;
 import testHttp.dao.TestConn;
 
 import java.io.IOException;
@@ -28,7 +31,7 @@ public class GetHLD extends Thread {
                 String url = "http://www.helloan.cn/process/lend/bids?pageNow=" + i + "&isFromPageBtnB=Y";
                 HttpRespons hr = testHttp.send(url, "GET", map, map);
                 String result = hr.getContent();
-                List<List> list = HtmlParser.testTable("",result);
+                List<List> list = HtmlParser.testTable("", result);
                 int start = result.indexOf("<span class=\"instList-produceType\">", 0);
                 j = 0;
                 while (start != -1) {

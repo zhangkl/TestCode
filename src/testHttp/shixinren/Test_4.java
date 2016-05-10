@@ -1,10 +1,12 @@
-package testHttp;
+package testHttp.shixinren;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import testFile.ReadWriteFileWithEncode;
+import testHttp.TestHttp;
 import testHttp.dao.TestConn;
+import testHttp.httpUtil.HttpRespons;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -23,30 +25,9 @@ import java.util.Map;
  * Time: 17:31
  * To change this template use File | Settings | File Templates.
  */
-public class Test_Array implements Runnable {
+public class Test_4 implements Runnable {
     private static Logger logger = Logger.getLogger("Test_4.class");
-    private static String[] areaName = {"北京","天津","河北","山西","内蒙古","吉林","黑龙江","上海","江苏","浙江","安徽","福建","江西","山东","河南","湖北","湖南","广东","广西","海南","重庆","四川","贵州","云南","西藏","陕西","甘肃","青海","宁夏","新疆","香港","澳门","台湾"};
-    private static String[] cardNumArray = {"0011","0012","0013","0014","0015","0016","0017","0018","0019","002","0020","0021","0022","0023","0024","0025","0026","0027","0028","0029","003","0030","0031","0032","0033","0034","0035","0036","0037","0038","0039"};
-    private static String[] cardNumArray1 = {"005","0050","0051","0052","0053","0054","0056","0057","0058","0059","031","0310","0311","0312","0313","0314","0315","0316","0317","0318","0319","051","0510","0511","0512","0513","0514","0515","0516","0517","0518","0519"};
-    private static String[] cardNumArray2 = {"0610","0611","0612","0613","0615","0617","0618","0817","101","1010","1011","1012","1013","1014","1015","1016","1017","1018","1019","121","1210","1211","1212","1213","1214","1215","1217","1218","1219","151","1510","1511"};
-    private static String[] cardNumArray3 = {"1512","1513","1514","1515","1516","1517","1518","1519","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","3010","3011","3012","3013","3014","3015","3016","3017","3018","3019"};
-    /*private static String[] cardNumArray1 = {"1512","0011","0311","1211","0611","1513","0012","1212","0612","0312","1514","1213","0013","0613","0313"};
-    private static String[] cardNumArray2 = { "1515","1214","0014","0314","3010","1516","2010","0315","1215","0015","0510","3011","1517","1010","0016"};
-    private static String[] cardNumArray3 = { "0316","2011","0511","3012","1518","1011","0317","0017","2012","0512","3013","1519","1012","2013","0318"};
-    private static String[] cardNumArray4 = { "0018","0513","3014","1013","0319","2014","0019","0514","3015","1014","2015","0020","0515","3016","2016"};
-    private static String[] cardNumArray5 = { "0021","1015","0516","3017","2017","0022","1016","0517","3018","2018","0023","1017","0518","3019","2019"};
-    private static String[] cardNumArray6 = { "0024","1018","0519","0025","1019","0026","0027","0028","0029","0030","0031","0032","0033","0034","0035"};
-    private static String[] cardNumArray7 = { "0036","0037","0038","0039","0615","1217","1218","1219","0617","0618","0817","0010","0030","0020","0050"};
-    private static String[] cardNumArray8 = { "0011","0031","0021","0051","0010","0020","0050","0030","001","031","101","002","151","201","121","051","301"};
-    private static String[] cardNumArray9 = { "003","005","0050","0051","0052","0053","0054","0056","0057","1510","0010","0310","0058","0610","1511","0011"};
-    private static String[] cardNumArray10 = { "0059","0311","0611","1512","0012","1210","0612","1513","0312","0013","1211","0613","0313","1514","1212","1515"};
-    private static String[] cardNumArray11 = { "0314","0014","1213","2010","0315","1516","0510","1010","0015","1214","2011","0316","1517","0016","0511","1011"};
-    private static String[] cardNumArray12 = { "1215","3010","0317","1518","0512","0017","1012","3011","0318","2012","0513","1519","0319","3012","2013","0018"};
-    private static String[] cardNumArray13 = { "1013","0514","2014","0515","1014","3013","0019","2015","0516","1015","3014","0517","2016","3015","1016","0518"};
-    private static String[] cardNumArray14 = { "2017","0020","3016","1017","0519","2018","0021","3017","2019","0022","3018","1018","0023","3019","1019","0024"};
-    private static String[] cardNumArray15 = { "0025","0026","0027","0028","0029","0030","0031","0032","0033","0034","0035","0036","0037","0038","0039","0615"};
-    private static String[] cardNumArray16 = { "1217","1218","1219","0617","0618","0817"};*/
-    //private static String[] cardNumArray = {"001","301","201"};
+
     private int sucessCount = 0;
     private long dateCount = 0;
     TestConn testConn;
@@ -56,40 +37,48 @@ public class Test_Array implements Runnable {
     int end;
     int pn;
 
-    public Test_Array(int sucessCount, long dateCount, TestConn testConn, Statement statement, Statement statement2, String[] cardNumArray, int pn) {
+    public Test_4(int sucessCount, long dateCount, TestConn testConn, Statement statement, Statement statement2, int start,int end,int pn) {
         this.sucessCount = sucessCount;
         this.dateCount = dateCount;
         this.testConn = testConn;
         this.statement = statement;
         this.statement2 = statement2;
-        this.cardNumArray = cardNumArray;
+        this.start = start;
+        this.end = end;
         this.pn = pn;
     }
 
     public static void main(String[] args) {
         try {
+            /*for (int i = 0; i < 10000; i+=50) {
+                TestConn testConn = new TestConn();
+                Test_4 test4 = new Test_4(0, 0, testConn,testConn.creatStatement(),testConn.creatStatement(),i,i+50);
+                Thread thread = new Thread(test4);
+                thread.setName("thread:"+i+"--"+(i+50));
+                thread.start();
+            }*/
             TestConn testConn = new TestConn();
-            Test_Array test4 = new Test_Array(0, 0, testConn,testConn.creatStatement(),testConn.creatStatement(),cardNumArray,0);
-            Thread thread = new Thread(test4);
-            thread.setName("thread:"+0);
+            Test_4 test = new Test_4(0, 0, testConn,testConn.creatStatement(),testConn.creatStatement(),2110,2150,700);
+            Thread thread = new Thread(test);
+            thread.setName("thread:2100-2150");
             thread.start();
 
             TestConn testConn1 = new TestConn();
-            Test_Array test1 = new Test_Array(0, 0, testConn1,testConn1.creatStatement(),testConn1.creatStatement(),cardNumArray1,0);
+            Test_4 test1 = new Test_4(0, 0, testConn1,testConn1.creatStatement(),testConn1.creatStatement(),1911,1950,100);
             Thread thread1 = new Thread(test1);
-            thread1.setName("thread:" + 1);
+            thread1.setName("thread:1900-1950");
             thread1.start();
 
             TestConn testConn2 = new TestConn();
-            Test_Array test2 = new Test_Array(0, 0, testConn2,testConn2.creatStatement(),testConn2.creatStatement(),cardNumArray2,0);
+            Test_4 test2 = new Test_4(0, 0, testConn2,testConn2.creatStatement(),testConn2.creatStatement(),1811,1850,500);
             Thread thread2 = new Thread(test2);
-            thread2.setName("thread:" + 2);
+            thread2.setName("thread:1800-1850");
             thread2.start();
 
             TestConn testConn3 = new TestConn();
-            Test_Array test3 = new Test_Array(0, 0, testConn3,testConn3.creatStatement(),testConn3.creatStatement(),cardNumArray3,0);
+            Test_4 test3 = new Test_4(0, 0, testConn3,testConn3.creatStatement(),testConn3.creatStatement(),1410,1450,1050);
             Thread thread3 = new Thread(test3);
-            thread3.setName("thread:" + 3);
+            thread3.setName("thread:1400-1450");
             thread3.start();
 
         } catch (Exception e) {
@@ -100,10 +89,10 @@ public class Test_Array implements Runnable {
     @Override
     public void run() {
         //System.out.println(Thread.currentThread().getName());
-        getData(cardNumArray);
+        getData(start,end);
     }
 
-    public void getData(String[] cardArray) {
+    public void getData(int start,int end) {
         try {
             TestHttp testHttp = new TestHttp();
             testHttp.setDefaultContentEncoding("utf-8");
@@ -115,38 +104,38 @@ public class Test_Array implements Runnable {
             map.put("oe", "utf-8");
             map.put("format", "json");
             String currentQuery = "";
-            for (int i = 0; i < cardArray.length; i++) {
-                String cartNum = cardArray[i];
+            for (int i = start; i < end; i++) {
+                String cartNum = String.valueOf(i);
+                while(cartNum.length()<4){
+                    cartNum = "0"+ cartNum;
+                }
                 currentQuery = cartNum;
                 map.put("cardNum", cartNum);
-                for (int j = 0; j < areaName.length; j++) {
-                    map.put("areaName", areaName[j]);
-                    do  {
-                        map.put("pn", String.valueOf(pn));
-                        url = "https://sp0.baidu.com/8aQDcjqpAAV3otqbppnN2DJv/api.php";
-                        try {
-                            HttpRespons hr = testHttp.send(url, "GET", map, null);
-                            String jsonString = hr.getContent();
-                            json2Model(jsonString);
-                        } catch (Exception e) {
-                            logger.error(e.getMessage());
-                            logger.error(map.toString());
-                            continue;
-                        }
-                        /**
-                         * 数据大于两千，百度取得数据为空
-                         */
-                        if (dateCount >= 2000) {
-                            String str = Thread.currentThread().getName()+":"+"查询条件:" + cartNum + "," + areaName[j] + ",pn:" + pn + ",当前查询条件总条数:" + dateCount;
-                            logger.error(str);
-                            break;
-                        }
-                        String str = Thread.currentThread().getName()+":"+"查询条件:" + cartNum + "," + areaName[j] + ",pn:" + pn + ",目前成功插入条数:" + sucessCount + ",当前查询条件总条数:" + dateCount;
-                        logger.info(str);
-                        pn += 50;
-                    }while(pn<=dateCount);
-                    pn = 0;
-                }
+                do  {
+                    map.put("pn", String.valueOf(pn));
+                    url = "https://sp0.baidu.com/8aQDcjqpAAV3otqbppnN2DJv/api.php";
+                    try {
+                        HttpRespons hr = testHttp.send(url, "GET", map, null);
+                        String jsonString = hr.getContent();
+                        json2Model(jsonString);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage());
+                        logger.error(map.toString());
+                        continue;
+                    }
+                    /**
+                     * 数据大于两千，百度取得数据为空
+                     */
+                    if (dateCount >= 2000) {
+                        String str = Thread.currentThread().getName()+":"+"查询条件:" + cartNum + ",pn:" + pn + ",当前查询条件总条数:" + dateCount;
+                        logger.error(str);
+                        break;
+                    }
+                    String str = Thread.currentThread().getName()+":"+"查询条件:" + cartNum + ",pn:" + pn + ",目前成功插入条数:" + sucessCount + ",当前查询条件总条数:" + dateCount;
+                    logger.info(str);
+                    pn += 50;
+                }while(pn<=dateCount);
+                pn = 0;
             }
             ReadWriteFileWithEncode.write("D:\\code\\TestCode\\logs\\thred.txt",Thread.currentThread().getName() + ":循环结束。最后一次查询为：" + currentQuery,"UTF-8");
         } catch (Exception e) {

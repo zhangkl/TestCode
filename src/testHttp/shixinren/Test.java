@@ -1,10 +1,12 @@
-package testHttp;
+package testHttp.shixinren;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import testFile.ReadWriteFileWithEncode;
+import testHttp.TestHttp;
 import testHttp.dao.TestConn;
+import testHttp.httpUtil.HttpRespons;
 
 import java.io.IOException;
 import java.sql.ResultSet;

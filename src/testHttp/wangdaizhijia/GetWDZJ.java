@@ -1,4 +1,4 @@
-package testHttp;
+package testHttp.wangdaizhijia;
 
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
@@ -12,6 +12,8 @@ import org.htmlparser.tags.TableTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import testFile.ReadWriteFileWithEncode;
+import testHttp.HttpRespons;
+import testHttp.TestHttp;
 import testHttp.dao.TestConn;
 
 import java.io.IOException;

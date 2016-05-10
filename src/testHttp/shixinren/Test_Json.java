@@ -1,8 +1,7 @@
-package testHttp;
+package testHttp.shixinren;
 
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
-import testFile.ReadWriteFileWithEncode;
 import testHttp.dao.TestConn;
 
 import java.io.*;
@@ -10,10 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,7 +17,7 @@ import java.util.regex.Pattern;
  * Time: 17:31
  * To change this template use File | Settings | File Templates.
  */
-public class Test_List {
+public class Test_Json {
     private static Logger logger = Logger.getLogger("Test_4.class");
     private int sucessCount = 0;
     private long dateCount = 0;
@@ -32,8 +27,8 @@ public class Test_List {
 
     public static void main(String[] args) {
         try {
-            Test_List tj = new Test_List();
-            String path = "D:\\code\\TestCode\\logs\\list.txt";
+            Test_Json tj = new Test_Json();
+            String path = "C:\\Users\\lenovo-01\\Desktop\\error.txt";
             File file = new File(path);
             tj.read(file);
 
@@ -42,53 +37,22 @@ public class Test_List {
         }
     }
 
-    public static void read(File src) throws SQLException {
+    public static void read(File src) {
         String line = null;
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(src), "UTF-8"));
-            Test_List tj = new Test_List();
+                    new FileInputStream(src), "UTF-16"));
+            Test_Json tj = new Test_Json();
             tj.testConn = new TestConn();
             tj.statement = tj.testConn.creatStatement();
             tj.statement2 = tj.testConn.creatStatement();
-            String splatid = null;
-            String sname;
-            String sgray;
-            String sbrief;
-
             while ((line = reader.readLine()) != null) {
-                int index = line.indexOf("错误：");
-
-
-                if (index > -1) {
-                    line = line.substring(index+3);
-                    Pattern p = Pattern.compile("[\\u4e00-\\u9fa5]+|\\d+");
-                    Matcher m = p.matcher( line );
-                    if ( m.find() ) {
-                        splatid = m.group() ;
-                    }
-                    line = line.substring(line.indexOf("[")+1,line.length()-1);
-                    String[] arr = line.split(",");
-                    List<String> list = Arrays.asList(arr);
-                    System.out.println(list);
-                    for (int i = 0; i < list.size(); i+=3) {
-                        StringBuffer sb =  new StringBuffer("insert into CRED_WDZJ_PLATEXECUTIVE (SPLATID, SNAME, SGRAY, SBRIEF)\n" +
-                                "values (");
-                        sb.append("'"+splatid+"',");
-                        if (list.get(i).length()>50){
-                            ReadWriteFileWithEncode.write("D:\\code\\TestCode\\logs\\list_2.txt", "错误：" + splatid + list, "UTF-8");
-                            break;
-                        }
-                        sb.append("'"+list.get(i)+"',");
-                        sb.append("'"+list.get(i+1)+"',");
-                        sb.append("'" + list.get(i + 2) + "')");
-                        tj.statement.execute(sb.toString());
-                        tj.sucessCount++;
-                    }
-                    /*String json = line.substring(index);
-                    tj.saveJson(json);*/
+                int index = line.indexOf("{\"iname\"");
+                if (index > 0) {
+                    System.out.println(line.substring(index));
+                    String json = line.substring(index);
+                    tj.saveJson(json);
                 }
-                System.out.println(tj.sucessCount);
             }
 
             reader.close();

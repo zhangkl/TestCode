@@ -1,4 +1,4 @@
-package testHttp;
+package testHttp.httpUtil;
 
 import java.io.Serializable;
 import java.util.Map;

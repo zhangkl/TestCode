@@ -3,7 +3,7 @@
 // (powered by Fernflower decompiler)
 //
 
-package testHttp;
+package testHttp.httpUtil;
 
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.common.util.StringHelper;
@@ -19,6 +19,7 @@ import org.htmlparser.tags.TableTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
+import testHttp.TestHttp;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -253,7 +254,7 @@ public class HtmlParser {
 
     public static void main(String[] args) throws IOException, ParserException, InterruptedException {
         for (int i = 1; i < 10; i++) {
-            String url = "http://www.qixin.com/search/prov/LN_2106";
+            String url = "http://www.qixin.com/search/prov/BJ";
             HttpRespons hr = new TestHttp().send(url, "GET", null, null);
             String result = hr.getContent();
             System.out.println(result);

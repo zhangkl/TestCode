@@ -1,4 +1,4 @@
-package testHttp;
+package testHttp.tax;
 
 import org.apache.log4j.Logger;
 import org.htmlparser.NodeFilter;
@@ -9,6 +9,8 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import testFile.ReadWriteFileWithEncode;
 import testHttp.dao.TestConn;
+import testHttp.httpUtil.HtmlParser;
+import testHttp.shixinren.Test_Json;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -215,7 +217,7 @@ public class Test_TAX implements Runnable {
                     }else{
                         name = taxManager[i];
                     }
-                    
+
                 }
                 stringBuffer.append("'" +name + "'" + ",");//财务负责人姓名
                 stringBuffer.append("'" + sex + "'" + ",");//财务负责人性别

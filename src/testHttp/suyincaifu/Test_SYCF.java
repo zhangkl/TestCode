@@ -1,10 +1,13 @@
-package testHttp;
+package testHttp.suyincaifu;
 
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.htmlparser.util.ParserException;
 import testFile.ReadWriteFileWithEncode;
+import testHttp.TestHttp;
 import testHttp.dao.TestConn;
+import testHttp.httpUtil.HtmlParser;
+import testHttp.httpUtil.HttpRespons;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -113,7 +116,7 @@ public class Test_SYCF implements Runnable {
             Long loanAmt = Math.round((Double) map.get("loanAmt"));
             String loanId = (String) map.get("loanId");
             String url = "http://www.suyinwm.com/webloan/inc/Investbid_toSpecialAreaIndex.action?loanId="+loanId;
-            List<List> infoList = HtmlParser.testTable(url,"");
+            List<List> infoList = HtmlParser.testTable(url, "");
             List list0 = infoList.get(0);
             String _borrow = (String) list0.get(0);
             String[] borrow = _borrow.split("#");

@@ -1,4 +1,4 @@
-package testHttp;
+package testHttp.httpUtil;
 
 import junit.framework.TestCase;
 import org.htmlparser.Node;
@@ -86,7 +86,7 @@ public class ParserTestCase extends TestCase {
             for (int i = 0; i < list.size(); i++) {
                 LinkTag node = (LinkTag) list.elementAt(i);
                 System.out.println("testLinkTag() getLinkText is :" + node.getChildrenHTML());
-              
+
                 System.out.println("testLinkTag() Link is :" + node.extractLink());
             }
         } catch (Exception e) {
@@ -124,8 +124,8 @@ public class ParserTestCase extends TestCase {
      */
     public void testOrFilter() {
         NodeFilter inputFilter = new NodeClassFilter(InputTag.class);
-        NodeFilter selectFilter = new NodeClassFilter(SelectTag.class); 
-        NodeList nodeList = null; 
+        NodeFilter selectFilter = new NodeClassFilter(SelectTag.class);
+        NodeList nodeList = null;
         try {
             Parser parser = new Parser();
             parser .setInputHTML("<head><title>OrFilter Test</title>"
@@ -137,7 +137,7 @@ public class ParserTestCase extends TestCase {
                             + "<input type=’text’ value=’text2′ name=’text2′/>"
                             + "<select><option id=’1′>1</option><option id=’2′>2</option><option id=’3′></option></select>"
                             + "<a href=’http://www.yeeach.com’>yeeach.com</a>"
-                            + "</body>"); 
+                            + "</body>");
             parser.setEncoding(parser.getEncoding());
             OrFilter lastFilter = new OrFilter(inputFilter,selectFilter);
             nodeList = parser.extractAllNodesThatMatch(lastFilter);
@@ -149,14 +149,14 @@ public class ParserTestCase extends TestCase {
                 }
                 if (nodeList.elementAt(i) instanceof SelectTag) {
                     SelectTag tag = (SelectTag) nodeList.elementAt(i);
-                    NodeList list = tag.getChildren(); 
+                    NodeList list = tag.getChildren();
                     for (int j = 0; j < list.size(); j++) {
                         OptionTag option = (OptionTag) list.elementAt(j);
                        System.out.println("OrFilter Option"
                                         + option.getOptionText());
-                    } 
+                    }
                 }
-            } 
+            }
         } catch (ParserException e) {
             e.printStackTrace();
         }
@@ -183,17 +183,17 @@ public class ParserTestCase extends TestCase {
             for (int i = 0; i <= nodeList.size(); i++) {
                 if (nodeList.elementAt(i) instanceof TableTag) {
                     TableTag tag = (TableTag) nodeList.elementAt(i);
-                    TableRow[] rows = tag.getRows(); 
+                    TableRow[] rows = tag.getRows();
                     for (int j = 0; j < rows.length; j++) {
-                        TableRow tr = (TableRow) rows[j]; 
+                        TableRow tr = (TableRow) rows[j];
                         TableColumn[] td = tr.getColumns();
                         for (int k = 0; k < td.length; k++) {
                             System.out.println("<td>" + td[k].toPlainTextString());
-                        } 
-                    } 
+                        }
+                    }
 //                    System.out.println(nodeList.elementAt(i)+ " "+ i);
                 }
-            } 
+            }
         } catch (ParserException e) {
             e.printStackTrace();
         }
@@ -211,8 +211,8 @@ public class ParserTestCase extends TestCase {
                    System.out.println("testVisitorAll()  Tag name is :"
                             + tag.getTagName() + " /n Class is :"
                             + tag.getClass());
-                } 
-            }; 
+                }
+            };
             parser.visitAllNodesWith(visitor);
         } catch (ParserException e) {
             e.printStackTrace();
@@ -222,7 +222,7 @@ public class ParserTestCase extends TestCase {
      * 测试对指定Tag的NodeVisitor的用法
      */
     public void testTagVisitor() {
-        try { 
+        try {
             Parser parser = new Parser(
                     "<head><title>dddd</title>"
                             + "<link href=’/test01/css.css’ text=’text/css’ rel=’stylesheet’ />"
@@ -241,7 +241,7 @@ public class ParserTestCase extends TestCase {
                        System.out.println("visitTag() TitleTag : Tag name is :"
                                 + tag.getTagName() + " /n Class is :"
                                 + tag.getClass() + "/n Text is :"
-                                + tag.getText()); 
+                                + tag.getText());
                     } else if (tag instanceof LinkTag) {
                        System.out.println("visitTag() LinkTag : Tag name is :"
                                 + tag.getTagName() + " /n Class is :"
@@ -253,9 +253,9 @@ public class ParserTestCase extends TestCase {
                                 + tag.getTagName() + " /n Class is :"
                                 + tag.getClass() + "/n Text is :"
                                 + tag.getText());
-                    } 
-                } 
-            }; 
+                    }
+                }
+            };
             parser.visitAllNodesWith(visitor);
         } catch (Exception e) {
             e.printStackTrace();
@@ -286,7 +286,7 @@ public class ParserTestCase extends TestCase {
            htmlPage = new HtmlPage(parser);
            parser.visitAllNodesWith(htmlPage);
            System.out.println("Title:" + htmlPage.getTitle());
-           
+
            list = htmlPage.getBody();
 
            for (NodeIterator iterator=list.elements(); iterator.hasMoreNodes();) {
@@ -317,11 +317,11 @@ public class ParserTestCase extends TestCase {
      */
      public void testLinkBean() {
          Parser parser = new Parser();
-     
+
          LinkBean linkBean = new LinkBean();
          linkBean.setURL("http://www.baidu.com");
          URL[] urls = linkBean.getLinks();
-     
+
          for (int i = 0; i < urls.length; i++) {
              URL url = urls[i];
              System.out.println("testLinkBean() -url is :" + url);
@@ -340,7 +340,7 @@ public class ParserTestCase extends TestCase {
              .setInputHTML("<html><head><title>Link Test</title>"
              + "<link href=http://www.yeeach.com/’/test01/css.css’ text=’text/css’ rel=’stylesheet’ />"
              + "<link href=http://www.yeeach.com/’/test02/css.css’ text=’text/css’ rel=’stylesheet’ />"
-             + "</head><body>" 
+             + "</head><body>"
              + "<div id=AA>dafafda</div>"
              +"<div id=A2>CCC</div>"
              +"</body></html>");
@@ -379,7 +379,7 @@ public class ParserTestCase extends TestCase {
          }
      }
      /**
-      * 
+      *
       * 以StartWith的方式构建过虑器
       */
      private NodeFilter createStartWithFilter(final String filterStr){
