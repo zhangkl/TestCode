@@ -39,6 +39,7 @@ public class GetWDZJ extends Thread {
     private static Logger logger = Logger.getLogger("GetWDZJ.class");
 
     private int sucessCount = 0;
+    private int excount = 0;
     private int dateCount = 0;
     TestConn testConn;
     PreparedStatement ps;
@@ -58,21 +59,18 @@ public class GetWDZJ extends Thread {
 
     public static void main(String[] args) {
         try {
-            for (int i = 1; i < 126; i+=8) {
                 String sql = new String("insert into CRED_WDZJ_PLATINFO " +
                         "(IID,SPLATID,SPLATNAME,SPLATURL,SLOCATIONAREANAME,SONLINEDATE,SPLATEARNINGS,IREGISTEREDCAPITAL," +
                         "SWITHDRAWSPEED,STERM,IRISKRESERVE,SSECURITYMODELOTHER,SCREDITASSIGNMENT,SFUNDCUSTODIAN,SBIDSECURITY," +
                         "SGUARANTEEINSTITUTIONS,SBUSTYPE,SPLANTBRIEF,SCOMPANYNAME,SCOMPANYLEGAL,SCOMPANYTYPE,SSHAREHOLDERSTRUCTURE," +  //
                         "SREGISTEREDCAPITAL,SACTUALCAPITAL,SREGISTEREDADDR,SOPENDATE,SAPPROVALDATE,SREGISTRATIONAUTHORITY,SBUSINESSLICENSENUM," +
                         "SORGCODE,STAXREGISTRATIONNUM,SFILINGURL,SFILINGURLDATE,SFILINGTYPE,SFILINGCOMPANYNAME,SFILINGIPCNUM,SMANAGEFEE,SRECHARGEFEE," +
-                        "SCASHOUTFEE,SVIPFEE,STRANSFERFEE,SPAYTYPE,SADDR,SSERVICETEL,SCOMPANYTEL,SCOMPANYFAX,SSERVICEMAIL) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?," +
-                        "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                        "SCASHOUTFEE,SVIPFEE,STRANSFERFEE,SPAYTYPE,SADDR,SSERVICETEL,SCOMPANYTEL,SCOMPANYFAX,SSERVICEMAIL,SP2PORGCODE,SPLATSTATUS) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                 TestConn testConn = new TestConn();
-                GetWDZJ getWDZJ = new GetWDZJ(0, 0, testConn,testConn.creatPStatement(sql),testConn.creatStatement(), i, i+8);
+            GetWDZJ getWDZJ = new GetWDZJ(0, 0, testConn, testConn.creatPStatement(sql), testConn.creatStatement(), 128, 150);
                 Thread thread = new Thread(getWDZJ);
-                thread.setName("thread"+i);
                 thread.start();
-            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -84,9 +82,6 @@ public class GetWDZJ extends Thread {
             TestHttp testHttp = new TestHttp();
             Map map = new HashMap();
             for (int i = start; i < end; i++) {
-                if (i>125){
-                    break;
-                }
                 String url = "http://www.wdzj.com/front_select-plat?currPage=" + i;
                 HttpRespons hr = testHttp.send(url, "GET", map, null);
                 String result = hr.getContent();
@@ -106,7 +101,14 @@ public class GetWDZJ extends Thread {
         for (int i = 0; i < list.size(); i++) {
             Map map = (Map) list.get(i);
             String splatid = (String) map.get("platId");
+            String querySql = "select * from cred_wdzj_platinfo where splatid = " + splatid;
+            ResultSet count = statement2.executeQuery(querySql);
+            if (count.next()) {
+                System.out.println("已存在：" + excount++);
+                continue;
+            }
             String splatname = (String) map.get("platName");
+            int splatStatus = (Integer) map.get("platStatus");
             String platPin = (String) map.get("platPin");
             String splaturl = (String) map.get("platUrl");
             String slocationareaname = (String) map.get("locationAreaName")+","+(String) map.get("locationCityName");
@@ -283,6 +285,7 @@ public class GetWDZJ extends Thread {
             String sservicemail = otherMap.get("服务邮箱") ;//服务邮箱
 
             int iid = getSeqNextVal("SEQ_CRED_WDZJ_PLATINFO");
+            String sp2porgcode = "Q1015290000001".substring(0, 14 - String.valueOf(iid).length()) + iid;//
             ps.setInt(1,iid);  //iid
             ps.setString(2, splatid );//
             ps.setString(3, splatname );//
@@ -302,7 +305,7 @@ public class GetWDZJ extends Thread {
             ps.setString(17, sbustype);//
             StringReader reader = new StringReader(splantbrief);
             ps.setCharacterStream(18, reader, splantbrief.length());
-            ps.setString(19, scompanyname );//
+            ps.setString(19, scompanyname);//
             ps.setString(20, scompanylegal );//
             ps.setString(21, scompanytype);
             ps.setString(22, sshareholderstructure);
@@ -331,6 +334,8 @@ public class GetWDZJ extends Thread {
             ps.setString(45, scompanytel);
             ps.setString(46,scompanyfax);
             ps.setString(47, sservicemail);
+            ps.setString(48, sp2porgcode);
+            ps.setInt(49, splatStatus);
             ps.execute();
             sucessCount++;
 
