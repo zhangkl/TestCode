@@ -1,13 +1,6 @@
 package testHttp;
 
-import net.sf.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,20 +11,22 @@ import java.net.URL;
  */
 public class TestMSG {
     public static void main(String[] args) throws IOException, InterruptedException {
-        String url = "http://www.vipai.com/index.php?ctl=ajax&field_data=18617128423&act=check_field&field_name=mobile";
-        while (true) {
-            HttpURLConnection testHttp = (HttpURLConnection) new URL(url).openConnection();
-            InputStream in = testHttp.getInputStream();
-            BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(in,"UTF-8"));
-            String line = bufferedReader.readLine();
-            bufferedReader.close();
-            System.out.println(line);
-            line = line.substring(line.indexOf("{"));
-            JSONObject jsonObject = JSONObject.fromObject(line);
-            String status = jsonObject.get("status")+"";
-            if ("1".equals(status)) {
-                System.out.println("发送成功！");
+        Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler http://www.jb51.net");
+        if (java.awt.Desktop.isDesktopSupported()) {
+            try {
+                //创建一个URI实例,注意不是URL
+                java.net.URI uri = java.net.URI.create("http://www.jb51.net");
+                //获取当前系统桌面扩展
+                java.awt.Desktop dp = java.awt.Desktop.getDesktop();
+                //判断系统桌面是否支持要执行的功能
+                if (dp.isSupported(java.awt.Desktop.Action.BROWSE)) {
+                    //获取系统默认浏览器打开链接
+                    dp.browse(uri);
+                }
+            } catch (java.lang.NullPointerException e) {
+                //此为uri为空时抛出异常
+            } catch (java.io.IOException e) {
+                //此为无法获取系统默认浏览器
             }
         }
     }

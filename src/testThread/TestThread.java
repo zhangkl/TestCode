@@ -7,17 +7,34 @@ package testThread;
  * Time: 10:17
  * To change this template use File | Settings | File Templates.
  */
-public class TestThread {
-    public static void main(String[] args) {
-        Long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 10000000; i++) {
-            System.out.println(i);
-            Thread thread = new Thread();
+public class TestThread implements Runnable {
+    static int sum = 0;
 
-        }
-        Long endTime = System.currentTimeMillis();
 
-        System.out.println("运行时间："+(endTime-startTime));
+    public TestThread(int sum) {
+        this.sum = sum;
     }
 
+    public TestThread() {
+
+    }
+
+
+    public static void main(String[] args) {
+        for (int i = 0; i < 5; i++) {
+            TestThread testThread = new TestThread();
+            Thread thread = new Thread(testThread);
+            thread.start();
+
+        }
+    }
+
+    @Override
+    public void run() {
+        synchronized (TestThread.class) {
+            for (int l = 0; l < 10; l++) {
+                System.out.println(Thread.currentThread().getName() + "：" + l);
+            }
+        }
+    }
 }

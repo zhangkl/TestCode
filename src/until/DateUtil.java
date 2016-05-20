@@ -1,8 +1,5 @@
 package until;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -20,14 +17,13 @@ import java.util.Locale;
  * To change this template use File | Settings | File Templates.
  */
 public class DateUtil {
-    private static final Log log = LogFactory.getLog(DateUtil.class);
 
     public static void main(String[] args) {
         // Date testDate = DateUtil.getNextDay(Date.valueOf("2007-1-7"));
         // log.debug(DateFormatUtils.format(testDate.getTime(), "yyyy-MM-dd
         // hh:mm:ss"));
-        Date testDate = new Date(System.currentTimeMillis());
-        System.out.println("|" + DateUtil.changeDatetoComplexString(testDate)
+
+        System.out.println("|" + DateUtil.StringToDate2("2016-05-03")
                 + "|");
 
     }
@@ -373,7 +369,6 @@ public class DateUtil {
 
             return java.sql.Date.valueOf(strBuffer.toString());
         } catch (RuntimeException e) {
-            log.debug("字符串转时间:" + strDate, e);
             return null;
         }
     }
@@ -392,7 +387,6 @@ public class DateUtil {
 
             return StringToDate(year + "-" + month + "-" + date);
         } catch (RuntimeException e) {
-            log.debug("字符串转时间:" + strDate, e);
             return null;
         }
     }
@@ -404,7 +398,6 @@ public class DateUtil {
 
             return StringToDate(year + "-" + month + "-" + date);
         } catch (RuntimeException e) {
-            log.debug("字符串转时间:" + strDate, e);
             return null;
         }
     }
@@ -717,16 +710,11 @@ public class DateUtil {
         try {
 
             if (!serverDate.equals(clientDate)) {
-                log.error("日期错误: Server:" + serverDate + "client date:"
-                        + clientDate);
                 return true;
             } else {
                 return false;
             }
         } catch (Exception e) {
-            log.error("日期转换出错!", e);
-            log.error("日期错误: Server:" + serverDate + "client date:"
-                    + clientDate);
             return true;
         }
 
