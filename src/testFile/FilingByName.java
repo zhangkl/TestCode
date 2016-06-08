@@ -1,9 +1,7 @@
 package testFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -12,43 +10,60 @@ import java.util.Date;
  * User: zhangkl
  * Date: 2015/10/9
  * Time: 10:59
- * To change this template use File | Settings | File Templates.
+ *  根据文件名拷贝出文件到指定文件夹下
  */
 public class FilingByName {
 
-    static int totleNum = 0;
-    static String initUrl = "D:\\document\\2015-10-12";
-    static String desUrl = initUrl + "_按月份";
-    private String baseHome = "";
+    static int totleNum = 1;
+    static String filepath = "C:\\Users\\lenovo-01\\Desktop\\更新文件123.txt";
+    static String desUrl = "C:\\Users\\lenovo-01\\Desktop\\20160531";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        FilingByName fb = new FilingByName();
+        fb.copyFile();
         /*new FilingByName().filing(initUrl, desUrl);*/
-        /*new FilingByName().statistics(desUrl);*/
-        /*new FilingByName().addLogFile(desUrl, "总处理文件个数：" + totleNum);*/
-        System.out.println(new FilingByName().getBaseHome());
+        /*new FilingByName().statistics(desUrl);
+        new FilingByName().addLogFile(desUrl, "总处理文件个数：" + totleNum);*/
     }
 
-    public synchronized String getBaseHome() {
-        String home = System.getProperty("Home");
-        if (home != null) {
-            String homeTemp = (home == null ? null : new File(home).getPath().replace('\\', '/'));
-            if (!homeTemp.endsWith("/")) {
-                homeTemp = homeTemp + "/";
+    public void copyFile() throws IOException {
+        String line = null;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filepath));
+            while ((line = reader.readLine()) != null) {
+                if (line.length() == 0) {
+                    continue;
+                }
+                File afile = new File(line);
+                String fileName = afile.getName();
+                String prefix = fileName.substring(fileName.lastIndexOf(".") + 1);
+                if ("class".equals(prefix)) {
+                    String classPath = line.replace("D:\\vss\\SFCPProject\\src", "D:\\vss\\SFCPProject\\WebRoot\\WEB-INF\\classes");
+                    afile = new File(classPath);
+                } else if ("xml".equals(prefix)) {
+                    String classPath = line.replace("D:\\vss\\SFCPProject\\conf", "D:\\vss\\SFCPProject\\WebRoot\\WEB-INF\\classes");
+                    afile = new File(classPath);
+                }
+
+                String dpath = afile.getPath().replace("D:\\vss\\SFCPProject", desUrl).replace("\\src", "");
+                if ("xml".equals(prefix)) {
+                    dpath = dpath.replace("conf", "");
+                }
+                File dfile = new File(dpath);
+                if (!dfile.getParentFile().exists()) {
+                    dfile.getParentFile().mkdirs();
+                }
+                if (!dfile.exists()) {
+                    Files.copy(afile.toPath(), dfile.toPath());
+                }
+                System.out.println(totleNum++);
             }
-            return homeTemp;
+            reader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        if ((this.baseHome == null) || (this.baseHome.length() == 0)) {
-            String userHome = System.getProperty("user.dir");
-            String temp = (userHome == null ? null : new File(userHome).getPath().replace('\\', '/'));
-            temp = temp.substring(0, temp.lastIndexOf("/"));
-            this.baseHome = (temp + "/");
-        } else {
-            String temp = (baseHome == null ? null : new File(baseHome).getPath().replace('\\', '/')); ;
-            if (!temp.endsWith("/")) {
-                this.baseHome = (temp + "/");
-            }
-        }
-        return this.baseHome;
     }
 
     public void filing(String urlStr, String desURL) {

@@ -21,13 +21,28 @@ public class ReadWriteFileWithEncode {
     public static String read(String path, String encoding) throws IOException {
         String content = "";
         File file = new File(path);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(file), encoding));
+        FileInputStream in = new FileInputStream(file);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in, encoding));
         String line = null;
         while ((line = reader.readLine()) != null) {
             content += line + "\n";
         }
         reader.close();
+        System.out.println(content);
+        return content;
+    }
+
+    public static String readByte(String path, String encoding) throws IOException {
+        String content = "";
+        File file = new File(path);
+        FileInputStream in = new FileInputStream(file);
+        byte[] buff = new byte[1024];
+        int len = in.read(buff);
+        while (len != -1) {
+            System.out.println(new String(buff, encoding));
+            len = in.read();
+        }
+        in.close();
         return content;
     }
 
@@ -71,7 +86,8 @@ public class ReadWriteFileWithEncode {
     }
 
     public static void main(String[] args) throws IOException {
-        long startTime = System.currentTimeMillis();
+        read("C:\\Users\\lenovo-01\\Desktop\\SQL.txt", "GB2312");
+        /*long startTime = System.currentTimeMillis();
         String path = "C:\\Users\\lenovo-01\\Desktop\\100.txt";
         File file = new File(path);
         if(!file.exists())
@@ -87,7 +103,7 @@ public class ReadWriteFileWithEncode {
         String RECORDOPRTYPEOFINFO = "1";
         String INFOINDICATOR = "2";
         String UNPAID180 = "0";
-        String PAYSTATE24MONTH = "///////////////////////*";
+        String PAYSTATE24MONTH = "//////////////////////*//*";
         String ACCOUNTSTATE = "1";
         String CLASS5STATE = "1";
         String MAXTERMSPASTDUE = "99";
@@ -146,7 +162,7 @@ public class ReadWriteFileWithEncode {
         }
         writer.close();
         long entTime = System.currentTimeMillis();
-        System.out.println("运行时间(秒)："+(entTime-startTime)/1000f);
+        System.out.println("运行时间(秒)："+(entTime-startTime)/1000f);*/
 //        ReadWriteFileWithEncode.write(path, read(path,"GB2312"), "ASCII");
         /*byte[] b = new byte[1];
         b[0]= 13;

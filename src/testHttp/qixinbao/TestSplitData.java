@@ -60,11 +60,6 @@ public class TestSplitData implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        /*try {
-            new TestSplitData().savaZYINFO("");
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        }*/
     }
 
     @Override
