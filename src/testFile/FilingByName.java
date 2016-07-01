@@ -15,8 +15,8 @@ import java.util.Date;
 public class FilingByName {
 
     static int totleNum = 1;
-    static String filepath = "C:\\Users\\lenovo-01\\Desktop\\更新文件123.txt";
-    static String desUrl = "C:\\Users\\lenovo-01\\Desktop\\20160531";
+    static String filepath = "C:\\Users\\lenovo-01\\Desktop\\0627文件更新\\0627更新列表.txt";
+    static String desUrl = "C:\\Users\\lenovo-01\\Desktop\\0627文件更新";
 
     public static void main(String[] args) throws IOException {
         FilingByName fb = new FilingByName();
@@ -30,7 +30,7 @@ public class FilingByName {
         String line = null;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(filepath));
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null && line.startsWith("D")) {
                 if (line.length() == 0) {
                     continue;
                 }
@@ -43,19 +43,21 @@ public class FilingByName {
                 } else if ("xml".equals(prefix)) {
                     String classPath = line.replace("D:\\vss\\SFCPProject\\conf", "D:\\vss\\SFCPProject\\WebRoot\\WEB-INF\\classes");
                     afile = new File(classPath);
+                } else if ("js".equals(prefix) || "jsp".equals(prefix)) {
+                    String classPath = line.replace("D:\\vss\\SFCPProject\\conf", "D:\\vss\\SFCPProject\\WebRoot\\WEB-INF\\classes");
+                    afile = new File(classPath);
                 }
+                System.out.println(afile.getPath());
 
-                String dpath = afile.getPath().replace("D:\\vss\\SFCPProject", desUrl).replace("\\src", "");
-                if ("xml".equals(prefix)) {
-                    dpath = dpath.replace("conf", "");
-                }
+                String dpath = afile.getPath().replace("D:\\vss\\SFCPProject", desUrl);
                 File dfile = new File(dpath);
                 if (!dfile.getParentFile().exists()) {
                     dfile.getParentFile().mkdirs();
                 }
-                if (!dfile.exists()) {
-                    Files.copy(afile.toPath(), dfile.toPath());
+                if (dfile.exists()) {
+                    dfile.delete();
                 }
+                Files.copy(afile.toPath(), dfile.toPath());
                 System.out.println(totleNum++);
             }
             reader.close();
