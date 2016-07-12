@@ -82,7 +82,9 @@ public class HttpUtil {
             url += paramStr;
         }
         HttpGet httpRequest = new HttpGet(url);
-        setHeader(httpRequest);
+        /*HttpHost proxy =new HttpHost("218.75.100.114",8080,"http");
+        RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
+        httpRequest.setConfig(config);*/
         if (cookies != null) {
             httpRequest.setHeader("Cookie", cookies);
         }
