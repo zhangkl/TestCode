@@ -1,7 +1,6 @@
 package testFile;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -57,7 +56,7 @@ public class FilingByName {
                 if (dfile.exists()) {
                     dfile.delete();
                 }
-                Files.copy(afile.toPath(), dfile.toPath());
+                //Files.copy(afile.toPath(), dfile.toPath());
                 System.out.println(totleNum++);
             }
             reader.close();

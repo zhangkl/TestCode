@@ -27,11 +27,48 @@ public class Test_Json {
 
     public static void main(String[] args) {
         try {
-            Test_Json tj = new Test_Json();
+            /*Test_Json tj = new Test_Json();
             String path = "C:\\Users\\lenovo-01\\Desktop\\error.txt";
             File file = new File(path);
-            tj.read(file);
-
+            tj.read(file);*/
+            Test_Json tj = new Test_Json();
+            tj.testConn = new TestConn();
+            tj.statement = tj.testConn.creatStatement();
+            tj.statement2 = tj.testConn.creatStatement();
+            tj.saveJson("{\n" +
+                    "    \"iname\": \"王彬\",\n" +
+                    "    \"StdStg\": 6899,\n" +
+                    "    \"changefreq\": \"always\",\n" +
+                    "    \"StdStl\": 8,\n" +
+                    "    \"type\": \"失信被执行人名单\",\n" +
+                    "    \"_update_time\": \"1467877413\",\n" +
+                    "    \"publishDateStamp\": \"1467043200\",\n" +
+                    "    \"performedPart\": \"\",\n" +
+                    "    \"sexy\": \"男\",\n" +
+                    "    \"disruptTypeName\": \"其他有履行能力而拒不履行生效法律文书确定义务\",\n" +
+                    "    \"courtName\": \"颍州区人民法院\",\n" +
+                    "    \"duty\": \"被告支付原告189448.6元\",\n" +
+                    "    \"partyTypeName\": \"0\",\n" +
+                    "    \"gistUnit\": \"安徽省阜阳市颍州区人民法院\",\n" +
+                    "    \"priority\": \"1.0\",\n" +
+                    "    \"performance\": \"全部未履行\",\n" +
+                    "    \"age\": \"36\",\n" +
+                    "    \"gistId\": \"2003州刑初字第5号\",\n" +
+                    "    \"businessEntity\": \"\",\n" +
+                    "    \"publishDate\": \"2016年06月28日\",\n" +
+                    "    \"SiteId\": 2004188,\n" +
+                    "    \"cardNum\": \"34122219800****6872\",\n" +
+                    "    \"focusNumber\": \"0\",\n" +
+                    "    \"regDate\": \"20030227\",\n" +
+                    "    \"loc\": \"http://shixin.court.gov.cn/detail?id=120843028\",\n" +
+                    "    \"sitelink\": \"http://shixin.court.gov.cn/\",\n" +
+                    "    \"lastmod\": \"2016-07-07T14:28:12\",\n" +
+                    "    \"_select_time\": 1467877299,\n" +
+                    "    \"_version\": 14712,\n" +
+                    "    \"caseCode\": \"(2003)皖1202执字第00174号\",\n" +
+                    "    \"areaName\": \"安徽\",\n" +
+                    "    \"unperformPart\": \"\"\n" +
+                    "}");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -121,7 +158,7 @@ public class Test_Json {
             while (publishDateStamp.length() < 13) {
                 publishDateStamp += "0";
             }
-            Timestamp timestamp2 = new Timestamp(Long.valueOf(_update_time));
+            Timestamp timestamp2 = new Timestamp(Long.valueOf(publishDateStamp));
             sql.append("to_timestamp('" + timestamp2 + "', 'yyyy-mm-dd hh24:mi:ss:ff')" + ",");
             sql.append("'" + jsonObject2.getString("SiteId") + "'");
             sql.append(")");

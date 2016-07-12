@@ -7,10 +7,8 @@ package testHttp.httpUtil;
 
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.common.util.StringHelper;
-import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
-import org.htmlparser.Tag;
 import org.htmlparser.filters.*;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.TableColumn;
@@ -18,11 +16,9 @@ import org.htmlparser.tags.TableRow;
 import org.htmlparser.tags.TableTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
-import org.htmlparser.util.SimpleNodeIterator;
 
-import java.io.*;
-import java.net.URL;
-import java.sql.*;
+import java.io.IOException;
+import java.sql.Connection;
 import java.util.*;
 
 public class HtmlParser {
@@ -33,230 +29,172 @@ public class HtmlParser {
     public HtmlParser() {
     }
 
-    public void indexNewsContent(String sitepath) throws Exception {
-        Parser myParser = new Parser(sitepath);
-        myParser.setEncoding("UTF-8");
-        NodeList nodeList = myParser.extractAllNodesThatMatch(new NodeFilter() {
-            public boolean accept(Node node) {
-                return node instanceof Tag && !((Tag) node).isEndTag() && ((Tag) node).getTagName().equals("DIV") && ((Tag) node).getAttribute("class") != null && ((Tag) node).getAttribute("class").equals("w_box");
-            }
-        });
-        Node node = nodeList.elementAt(1);
-        logger.debug(node.toHtml());
-        this.extractText(node.toHtml());
-    }
-
-    public void extractText(String inputHtml) throws Exception {
-        Parser parser = Parser.createParser(inputHtml, "GBK");
-        TagNameFilter filter = new TagNameFilter("a");
-        NodeList nodeList = parser.extractAllNodesThatMatch(filter);
-        SimpleNodeIterator it = nodeList.elements();
-        this.getConnection();
-
-        while (it.hasMoreNodes()) {
-            LinkTag node = (LinkTag) it.nextNode();
-            String href = node.getLink();
-            String title = node.getLinkText();
-            logger.info("分析首页新闻【" + title + "】，链接地址【" + href + "】");
-
-            try {
-                if (!this.newsExist(title)) {
-                    this.insertDataBase(title, this.extractContent(href));
-                } else {
-                    logger.info("新闻【" + title + "】数据库中已经存在，忽略进入下一个新闻分析！");
-                }
-            } catch (SQLException var10) {
-                logger.error("插入数据库新闻记录异常！" + var10.getMessage());
-                var10.printStackTrace();
-            } catch (Exception var11) {
-                logger.error(var11.getMessage());
-                logger.info("分析新闻【" + title + "】，链接地址【" + href + "】失败，进入下一个新闻分析。");
-                var11.printStackTrace();
-            }
-        }
-
-        this.closeConnection();
-    }
-
-    public String extractContent(String content) throws Exception {
-        try {
-            Parser pe = new Parser(content);
-            pe.setEncoding("GBK");
-            NodeList nodeList = pe.extractAllNodesThatMatch(new NodeFilter() {
-                public boolean accept(Node node) {
-                    return node instanceof Tag && !((Tag) node).isEndTag() && ((Tag) node).getTagName().equals("DIV") && ((Tag) node).getAttribute("class") != null && ((Tag) node).getAttribute("class").equals("cs_content");
-                }
-            });
-            int size = nodeList.size();
-            Node node = nodeList.elementAt(size - 1);
-            content = node.toHtml();
-            logger.debug("==========extractContent==============");
-            logger.debug(content);
-        } catch (Exception var6) {
-            logger.error("分析新闻页面出现异常！" + var6.getMessage() + "原因可能出现于新闻页面不存在<div class=\"cs_content\"></div>标记。");
-            throw var6;
-        }
-
-        return this.removeTagA(content);
-    }
-
-    public String removeTagA(String content) throws ParserException {
-        Parser myParser = new Parser(content);
-        myParser.setEncoding("GBK");
-        NodeList nodeList = myParser.extractAllNodesThatMatch(new TagNameFilter("a"));
-        SimpleNodeIterator it = nodeList.elements();
-
-        while (it.hasMoreNodes()) {
-            LinkTag node = (LinkTag) it.nextNode();
-            logger.info("移除新闻内容中包含的文字、图片的链接【" + node.toHtml() + "】。");
-            if (node.getLink().indexOf("cheshi.com") > -1) {
-                content = content.replace(node.toHtml(), node.getStringText());
-            }
-        }
-
-        logger.debug("==========removeTagA==============");
-        logger.debug(content);
-        return this.downloadImages(content, "D:\\autodata\\upload\\intersite", "upload/intersite");
-    }
-
-    public String downloadImages(String content, String uploadImgPath, String localhost) throws ParserException {
-        File f = new File(uploadImgPath);
-        if (!f.exists()) {
-            f.mkdirs();
-        }
-
-        Parser myParser = new Parser(content);
-        myParser.setEncoding("GBK");
-        NodeList nodeList = myParser.extractAllNodesThatMatch(new TagNameFilter("img"));
-        SimpleNodeIterator it = nodeList.elements();
-
-        while (it.hasMoreNodes()) {
-            Tag tag = (Tag) it.nextNode();
-            String src = tag.getAttribute("src");
-            String filename = src.substring(src.lastIndexOf("/") + 1);
-            InputStream is = null;
-            FileOutputStream fos = null;
-
-            try {
-                URL ioe = new URL(src);
-                is = ioe.openStream();
-                boolean bytesRead = false;
-                byte[] buff = new byte[1024];
-                fos = new FileOutputStream(uploadImgPath + "/" + filename);
-
-                int bytesRead1;
-                while ((bytesRead1 = is.read(buff, 0, buff.length)) != -1) {
-                    fos.write(buff, 0, bytesRead1);
-                }
-
-                content = content.replace(src, localhost + "/" + filename);
-            } catch (FileNotFoundException var26) {
-                var26.printStackTrace();
-            } catch (IOException var27) {
-                var27.printStackTrace();
-            } finally {
-                try {
-                    if (fos != null) {
-                        fos.close();
-                    }
-
-                    if (is != null) {
-                        is.close();
-                    }
-                } catch (IOException var25) {
-                    var25.printStackTrace();
-                }
-
-            }
-        }
-
-        logger.debug("=================downloadImages==================");
-        logger.debug(content);
-        return content;
-    }
-
-    public void getConnection() {
-        try {
-            Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
-            String se = "jdbc:microsoft:sqlserver://192.168.99.188:12580;databaseName=Project2009;SelectMethod=cursor";
-            String strUserName = "sa";
-            String strPWD = "qsyjcsxdl@@@web2009@@@";
-            this.conn = DriverManager.getConnection(se, strUserName, strPWD);
-        } catch (ClassNotFoundException var4) {
-            var4.printStackTrace();
-        } catch (SQLException var5) {
-            var5.printStackTrace();
-        }
-
-    }
-
-    public void closeConnection() {
-        try {
-            if (this.conn != null && !this.conn.isClosed()) {
-                this.conn.close();
-            }
-        } catch (SQLException var2) {
-            var2.printStackTrace();
-        }
-
-    }
-
-    public void insertDataBase(String newsTitle, String newsContent) throws SQLException {
-        PreparedStatement pstmt = null;
-
-        try {
-            pstmt = this.conn.prepareStatement("INSERT INTO FumNews(NewsTitle, NewsContext, NewsState) values(?, ?, ?)");
-            pstmt.setString(1, newsTitle);
-            pstmt.setString(2, newsContent);
-            pstmt.setInt(3, 1);
-            pstmt.executeUpdate();
-        } catch (SQLException var12) {
-            throw var12;
-        } finally {
-            try {
-                if (pstmt != null) {
-                    pstmt.close();
-                }
-            } catch (SQLException var11) {
-                var11.printStackTrace();
-            }
-
-        }
-
-    }
-
-    public boolean newsExist(String title) throws SQLException {
-        PreparedStatement pstmt = null;
-
-        boolean var4;
-        try {
-            pstmt = this.conn.prepareStatement("SELECT top 1 NewsId from FumNews where NewsTitle = ?");
-            ResultSet e = pstmt.executeQuery();
-            var4 = e.next();
-        } catch (SQLException var13) {
-            throw var13;
-        } finally {
-            try {
-                if (pstmt != null) {
-                    pstmt.close();
-                }
-            } catch (SQLException var12) {
-                var12.printStackTrace();
-            }
-
-        }
-
-        return var4;
-    }
-
     public static void main(String[] args) throws IOException, ParserException, InterruptedException {
-        for (int i = 1; i < 10; i++) {
-            String url = "http://www.qixin.com/search/prov/BJ";
-            HttpRespons hr = new TestHttp().send(url, "GET", null, null);
-            String result = hr.getContent();
-            System.out.println(result);
-            System.out.println(getLink(url, ""));
-        }
+        String s = "\n" +
+                "\n" +
+                "\n" +
+                "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
+                "\n" +
+                "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+                "<head>\n" +
+                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n" +
+                "<title>全国法院失信被执行人名单信息公布与查询</title>\n" +
+                "<link href=\"/static/style/style.css\" type=\"text/css\" rel=\"stylesheet\" media=\"screen, projection\" />\n" +
+                "<script language=\"javascript\" type=\"text/javascript\" src=\"/static/javascript/jquery-latest.js\"></script>\n" +
+                "<script language=\"javascript\" type=\"text/javascript\" src=\"/static/javascript/search.js\"></script>\n" +
+                "<script type=\"text/javascript\" type=\"text/javascript\" src=\"/static/javascript/visit.js\"></script>\n" +
+                "<script>\n" +
+                "var contextPath = '';\n" +
+                "var totalPage = 1084;\n" +
+                "</script>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "\t<div style=\"padding: 14px 60px;\" id=\"ResultlistBlock\">\n" +
+                "\t\t<h4 style=\"text-align: left; padding: 8px; margin: 0;\">\n" +
+                "\t\t\t对<span style=\"color: red; padding: 4px;\">\"__\"</span>的查询结果：\n" +
+                "\t\t</h4>\n" +
+                "\t\t<table width=\"100%\" border=\"0\" align=\"center\" cellpadding=\"3\"\n" +
+                "\t\t\tcellspacing=\"0\" class=\"Resultlist\" id=\"Resultlist\">\n" +
+                "\t\t\t<tbody>\n" +
+                "\t\t\t\t<tr>\n" +
+                "\t\t\t\t\t<th width=\"30\" align=\"center\">序号</th>\n" +
+                "\t\t\t\t\t<th nowrap=\"nowrap\" align=\"center\">被执行人姓名/名称</th>\n" +
+                "\t\t\t\t\t<th width=\"120\" align=\"center\">立案时间</th>\n" +
+                "\t\t\t\t\t<th nowrap=\"nowrap\" align=\"center\">案号</th>\n" +
+                "<!-- \t\t\t\t\t<th width=\"60\" align=\"center\">关注</th> -->\n" +
+                "\t\t\t\t\t<th width=\"60\" align=\"center\">查看</th>\n" +
+                "\t\t\t\t</tr>\n" +
+                "\n" +
+                "\t\t\t\t\n" +
+                "\t\t\t\t<tr style=\"height:28px;\">\n" +
+                "\t\t\t\t\t<td align=\"center\">1</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"吴缨\">吴缨</a></td>\n" +
+                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)京0105执9239号</td>\n" +
+                "\n" +
+                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4651433\">查看</a>]\n" +
+                "\t\t\t\t\t</td>\n" +
+                "\t\t\t\t</tr>\n" +
+                "\t\t\t\t\n" +
+                "\t\t\t\t<tr style=\"height:28px;\">\n" +
+                "\t\t\t\t\t<td align=\"center\">2</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"林雄\">林雄</a></td>\n" +
+                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)闽0102执01774号</td>\n" +
+                "\n" +
+                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4730119\">查看</a>]\n" +
+                "\t\t\t\t\t</td>\n" +
+                "\t\t\t\t</tr>\n" +
+                "\t\t\t\t\n" +
+                "\t\t\t\t<tr style=\"height:28px;\">\n" +
+                "\t\t\t\t\t<td align=\"center\">3</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"方冠人\">方冠人</a></td>\n" +
+                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)湘0421执326号</td>\n" +
+                "\n" +
+                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4536932\">查看</a>]\n" +
+                "\t\t\t\t\t</td>\n" +
+                "\t\t\t\t</tr>\n" +
+                "\t\t\t\t\n" +
+                "\t\t\t\t<tr style=\"height:28px;\">\n" +
+                "\t\t\t\t\t<td align=\"center\">4</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"兰瑞\">兰瑞</a></td>\n" +
+                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)豫1527执349号</td>\n" +
+                "\n" +
+                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4451670\">查看</a>]\n" +
+                "\t\t\t\t\t</td>\n" +
+                "\t\t\t\t</tr>\n" +
+                "\t\t\t\t\n" +
+                "\t\t\t\t<tr style=\"height:28px;\">\n" +
+                "\t\t\t\t\t<td align=\"center\">5</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"林明星\">林明星</a></td>\n" +
+                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)闽0921执00509号</td>\n" +
+                "\n" +
+                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4529774\">查看</a>]\n" +
+                "\t\t\t\t\t</td>\n" +
+                "\t\t\t\t</tr>\n" +
+                "\t\t\t\t\n" +
+                "\t\t\t\t<tr style=\"height:28px;\">\n" +
+                "\t\t\t\t\t<td align=\"center\">6</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"刘志远\">刘志远</a></td>\n" +
+                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)冀1182执257号</td>\n" +
+                "\n" +
+                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4470961\">查看</a>]\n" +
+                "\t\t\t\t\t</td>\n" +
+                "\t\t\t\t</tr>\n" +
+                "\t\t\t\t\n" +
+                "\t\t\t\t<tr style=\"height:28px;\">\n" +
+                "\t\t\t\t\t<td align=\"center\">7</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"王道稽\">王道稽</a></td>\n" +
+                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)闽0982执00688号</td>\n" +
+                "\n" +
+                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4525986\">查看</a>]\n" +
+                "\t\t\t\t\t</td>\n" +
+                "\t\t\t\t</tr>\n" +
+                "\t\t\t\t\n" +
+                "\t\t\t\t<tr style=\"height:28px;\">\n" +
+                "\t\t\t\t\t<td align=\"center\">8</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"陈夫柱\">陈夫柱</a></td>\n" +
+                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)苏1302执1827号</td>\n" +
+                "\n" +
+                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4420400\">查看</a>]\n" +
+                "\t\t\t\t\t</td>\n" +
+                "\t\t\t\t</tr>\n" +
+                "\t\t\t\t\n" +
+                "\t\t\t\t<tr style=\"height:28px;\">\n" +
+                "\t\t\t\t\t<td align=\"center\">9</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"李从江\">李从江</a></td>\n" +
+                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)豫1422执426号</td>\n" +
+                "\n" +
+                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4399298\">查看</a>]\n" +
+                "\t\t\t\t\t</td>\n" +
+                "\t\t\t\t</tr>\n" +
+                "\t\t\t\t\n" +
+                "\t\t\t\t<tr style=\"height:28px;\">\n" +
+                "\t\t\t\t\t<td align=\"center\">10</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"林雪勇\">林雪勇</a></td>\n" +
+                "\t\t\t\t\t<td align=\"center\">2016年06月03日</td>\n" +
+                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)闽0213执00769号</td>\n" +
+                "\n" +
+                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4547130\">查看</a>]\n" +
+                "\t\t\t\t\t</td>\n" +
+                "\t\t\t\t</tr>\n" +
+                "\t\t\t\t\n" +
+                "\t\t\t</tbody>\n" +
+                "\t\t</table>\n" +
+                "\t\t<div align=\"right\">\n" +
+                "\t\t\t\n" +
+                "\t\t\t\t<a href=\"javascript:void(0);\" onclick=\"gotoPage(1)\">首页</a>\n" +
+                "\t\t\t\t<a href=\"javascript:void(0);\" onclick=\"gotoPage(9)\">上一页 </a>\n" +
+                "\t\t\t\n" +
+                "\t\t\t\n" +
+                "\t\t\t\n" +
+                "\t\t\t\t<a href=\"javascript:void(0);\" onclick=\"gotoPage(11)\">下一页</a>\n" +
+                "\t\t\t\t<a href=\"javascript:void(0);\" onclick=\"gotoPage(1084)\">尾页</a>\n" +
+                "\t\t\t\n" +
+                "\t\t\t\n" +
+                "\t\t\t\n" +
+                "\t\t\t<input onclick=\"jumpTo()\" value=\"到\" type=\"button\" /> <input id=\"pagenum\" name=\"pagenum\" maxlength=\"6\" value=\"\" size=\"4\" type=\"text\" /> 页 10/1084 共10838条\n" +
+                "\t\t</div>\n" +
+                "\t</div>\n" +
+                "\t<form id=\"searchForm\" action=\"/findd\" method=\"post\">\n" +
+                "\t\t<input type=\"hidden\" id=\"currentPage\" name=\"currentPage\" value=\"10\"/>\n" +
+                "\t\t<input type=\"hidden\" id=\"pName\" name=\"pName\" value=\"__\"/>\n" +
+                "        <input type=\"hidden\" id=\"pCardNum\" name=\"pCardNum\" value=\"__________1111____\"/>\n" +
+                "        <input type=\"hidden\" id=\"pProvince\" name=\"pProvince\" value=\"0\"/>\n" +
+                "\t\t<input type=\"hidden\" id=\"pCode\" name=\"pCode\" />\n" +
+                "\t</form>\t\t\t\t\n" +
+                "</body>\n" +
+                "</html>\n" +
+                "\n";
+        System.out.println(getLink("", s));
+        getPage("", s);
     }
 
     public static Map<String, String> getData(String url, String content, NodeFilter nodeFilter) {
@@ -305,6 +243,17 @@ public class HtmlParser {
         return map;
     }
 
+    public static int getPage(String url, String cons) {
+        int start = cons.indexOf("<input onclick=\"jumpTo()\" value=\"到\" type=\"button\" /> <input id=\"pagenum\" name=\"pagenum\" maxlength=\"6\" value=\"\" size=\"4\" type=\"text\" /> 页");
+        int length = "<input onclick=\"jumpTo()\" value=\"到\" type=\"button\" /> <input id=\"pagenum\" name=\"pagenum\" maxlength=\"6\" value=\"\" size=\"4\" type=\"text\" /> 页".length();
+        int end = cons.indexOf("条\n" +
+                "\t\t</div>");
+        int page = Integer.parseInt(cons.substring(start + length, end).split("/")[1].split(" ")[0]);
+        System.out.println(page);
+        return page;
+    }
+
+
     public static List<Map<String, String>> getLink(String url, String cons) {
         ArrayList list = new ArrayList();
 
@@ -319,7 +268,7 @@ public class HtmlParser {
             }
 
             e.setEncoding("utf-8");
-            NodeFilter filter1 = new HasAttributeFilter("class", "search-result-title");
+            NodeFilter filter1 = new HasAttributeFilter("class", "View");
             NodeFilter filter2 = new TagNameFilter("a");
             AndFilter contentFilter = new AndFilter(filter1, filter2);
             NodeList nodes2 = e.extractAllNodesThatMatch(contentFilter);
@@ -327,9 +276,7 @@ public class HtmlParser {
             for (int i = 0; i < nodes2.size(); ++i) {
                 HashMap map = new HashMap();
                 LinkTag linkTag = (LinkTag) nodes2.elementAt(i);
-                map.put("link", linkTag.getLink());
-                map.put("linkText", linkTag.getLinkText());
-                list.add(map);
+                list.add(linkTag.getAttribute("id"));
             }
         } catch (Exception var9) {
             var9.printStackTrace();

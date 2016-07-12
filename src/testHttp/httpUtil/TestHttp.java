@@ -13,6 +13,8 @@ import java.util.*;
  */
 public class TestHttp {
     private String defaultContentEncoding = "UTF-8";
+    private int sendTimes = 0;
+    private int maxSendTimes = 5;
 
     /**
      * 发送GET请求
@@ -98,7 +100,7 @@ public class TestHttp {
      * @throws IOException
      */
     public HttpRespons send(String urlString, String method,
-                             Map<String, String> parameters, Map<String, String> propertys)
+                            Map<String, String> parameters, Map<String, String> propertys)
             throws IOException {
         HttpURLConnection urlConnection = null;
 
@@ -122,33 +124,17 @@ public class TestHttp {
         urlConnection.setDoOutput(true);
         urlConnection.setDoInput(true);
         urlConnection.setUseCaches(false);
-        urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36");
+        urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36");
         urlConnection.setRequestProperty("Upgrade-Insecure-Requests", "1");
         urlConnection.setRequestProperty("Pragma", "no-cache");
-        urlConnection.setRequestProperty( "Connection" , "keep-alive" );
-        urlConnection.setRequestProperty( "Content-Type" , "text/html" );
+        urlConnection.setRequestProperty("Connection", "keep-alive");
+        urlConnection.setRequestProperty("Content-Type", "text/html");
         urlConnection.setRequestProperty("Server", "Tengine");
-        urlConnection.setRequestProperty("Host", "www.qixin.com");
+        urlConnection.setRequestProperty("Host", "sp0.baidu.com");
         urlConnection.setRequestProperty("Date", "Mon, 09 May 2016 01:52:30 GMT");
-        urlConnection.setRequestProperty("Referer", "http://www.qixin.com/search/prov/BJ");
         urlConnection.setRequestProperty("Cookie", "aliyungf_tc=AQAAANDj4kCywQYAWiUnauW9hmLR0zKK; gr_user_id=7ec449a9-cfec-4125-af87-9767319b14be; connect.sid=s%3AnRQl_d9NAcVkRfoGyZox_x4b7Wf1vcM4.Jv10bBUj5%2BB2yeFJ5J6EiX66qp5RWEmyrvgshVHK990; __qc_wId=413; pgv_pvid=4793751178; login_returnurl=http%3A//www.qixin.com; __qc__k=TC_MK=CB13A6DE66AB1E38885B9F42D47AE29F; userKey=QXBAdmin-Web2.0_5tUrhr/6EVtLT+GVfE+vU8k330y+oPICCM6jhUGEoLc%3D; userValue=23ec2f2f-f3d3-f51a-58d5-000c715166b4; hide-download-panel=1; Hm_lvt_52d64b8d3f6d42a2e416d59635df3f71=1462244046,1462755805; Hm_lpvt_52d64b8d3f6d42a2e416d59635df3f71=1462758348; gr_session_id_955c17a7426f3e98=9d86877e-1c6b-44c6-95c2-46d024d40d37; _alicdn_sec=572fed5e9697b96531daf4934d84aabdd928b13b");
-
-        /*urlConnection.setRequestProperty( "Cache-control" , "no-cache, no-store" );
-        urlConnection.setRequestProperty("userValue", "4c9146f9-08b2-bd3c-5a28-75ebf42e684e");
-        urlConnection.setRequestProperty("hide-download-panel", "1");*/
-        /*urlConnection.setRequestProperty("gr_session_id_955c17a7426f3e98", "357b464b-b9c5-4fe3-9ae3-2ecdfd869e63");
-        urlConnection.setRequestProperty("Hm_lvt_52d64b8d3f6d42a2e416d59635df3f71", "1461547655");
-        urlConnection.setRequestProperty("Hm_lpvt_52d64b8d3f6d42a2e416d59635df3f71", "1461651647");
-        urlConnection.setRequestProperty("__qc__k", "TC_MK=CB13A6DE66AB1E38885B9F42D47AE29F");
-        urlConnection.setRequestProperty("pgv_pvid", "8052484779");
-        urlConnection.setRequestProperty("__qc_wId", "728");
-        urlConnection.setRequestProperty("aliyungf_tc", "AQAAANmn42Cw5gkAWiUnahkDzq51GmU7");
-        urlConnection.setRequestProperty("gr_user_id", "53ba8ddf-6ad6-4245-94cc-719f11da1833");
-        urlConnection.setRequestProperty("connect.sid", "s%3AXzxvNBR748DHeMQFFkyhsq2I8hxJ0kTs.LSQY6BdwXMTC9WHW40cmC2tmSOJ%2BqGufxkriMKV47CM");
-        urlConnection.setRequestProperty("login_returnurl", "http%3A//www.qixin.com");
-        urlConnection.setRequestProperty("userKey", "QXBAdmin-Web2.0_5tUrhr/6EVtLT+GVfE+vU8k330y+oPICCM6jhUGEoLc%3D");*/
-        urlConnection.setConnectTimeout( 20000 );
-        urlConnection.setReadTimeout( 20000 );
+        urlConnection.setConnectTimeout(50000);
+        urlConnection.setReadTimeout(500000);
 
         if (propertys != null) {
             for (String key : propertys.keySet()) {
@@ -172,6 +158,7 @@ public class TestHttp {
 
     /**
      * 得到响应对象
+     *
      * @param urlConnection
      * @return 响应对象
      * @throws IOException
@@ -182,12 +169,10 @@ public class TestHttp {
         String ecod = urlConnection.getContentEncoding();
         if (ecod == null)
             ecod = this.defaultContentEncoding;
-
-
         try {
             InputStream in = urlConnection.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(in,ecod));
+                    new InputStreamReader(in, ecod));
             httpResponser.contentCollection = new Vector<String>();
             StringBuffer temp = new StringBuffer();
             String line = bufferedReader.readLine();
@@ -197,9 +182,7 @@ public class TestHttp {
                 line = bufferedReader.readLine();
             }
             bufferedReader.close();
-
             httpResponser.urlString = urlString;
-
             httpResponser.defaultPort = urlConnection.getURL().getDefaultPort();
             httpResponser.file = urlConnection.getURL().getFile();
             httpResponser.host = urlConnection.getURL().getHost();
@@ -209,7 +192,6 @@ public class TestHttp {
             httpResponser.query = urlConnection.getURL().getQuery();
             httpResponser.ref = urlConnection.getURL().getRef();
             httpResponser.userInfo = urlConnection.getURL().getUserInfo();
-
             httpResponser.content = new String(temp.toString().getBytes(), ecod);
             httpResponser.contentEncoding = ecod;
             httpResponser.code = urlConnection.getResponseCode();
@@ -218,14 +200,26 @@ public class TestHttp {
             httpResponser.method = urlConnection.getRequestMethod();
             httpResponser.connectTimeout = urlConnection.getConnectTimeout();
             httpResponser.readTimeout = urlConnection.getReadTimeout();
-
             return httpResponser;
         } catch (IOException e) {
-            throw e;
+            /**
+             * 增加错误访问次数控制
+             */
+            try {
+                System.out.println("访问出错，重新访问" + sendTimes++);
+                if (sendTimes >= maxSendTimes) {
+                    throw e;
+                } else {
+                    makeContent(urlString, urlConnection);
+                }
+            } catch (IOException e1) {
+                throw e1;
+            }
         } finally {
             if (urlConnection != null)
                 urlConnection.disconnect();
         }
+        return httpResponser;
     }
 
     /**
@@ -324,6 +318,14 @@ public class TestHttp {
     }
 
     public static void main(String[] args) {
+
+        TestHttp testHttp = new TestHttp();
+        try {
+            HttpRespons httpRespons = testHttp.sendGet("http://www.123.com/");
+            System.out.println(httpRespons.getContent());
+        } catch (IOException e) {
+            testHttp.main(new String[]{});
+        }
 
     }
 }

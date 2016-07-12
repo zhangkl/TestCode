@@ -21,13 +21,7 @@ public class TestConn {
     //初始化连接
     public TestConn() {
         try {
-/*            Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
-     //与url指定的数据源建立连接
-
-            c = DriverManager.getConnection(dbUrl, theUser, thePw);*/
-
-            conPool = new ConnectionPool("oracle.jdbc.driver.OracleDriver",dbUrl,theUser,thePw,2);
-            //采用Statement进行查询
+            conPool = new ConnectionPool("oracle.jdbc.driver.OracleDriver", dbUrl, theUser, thePw, 10);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,7 +35,6 @@ public class TestConn {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return statement;
     }
 
@@ -53,9 +46,9 @@ public class TestConn {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return ps;
     }
+
     //执行查询
     public ResultSet executeQuery(String sql) {
         rs = null;
@@ -77,25 +70,20 @@ public class TestConn {
             return false;
     }
 
-    public ResultSet executeSave(String sql, Clob clob) {
-        rs = null;
+    public int executeSave(String sql) {
         try {
             connection = conPool.getConnection();
-            ps = connection.prepareStatement(sql);
-            ps.setClob(1, clob);
-            ps.execute();
+            statement = connection.createStatement();
+            if (statement.execute(sql)) {
+                return 1;
+            }
             conPool.returnConnection(connection);
         } catch (SQLException e) {
             e.printStackTrace();
-        }  finally {
-            try {
-                ps.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
-        return rs;
+        return 0;
     }
+
     public void close() {
         try {
             if (rs!=null)

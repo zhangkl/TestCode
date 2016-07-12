@@ -1,5 +1,8 @@
 package testThread;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Created with IntelliJ IDEA.
  * User: zhangkl
@@ -8,33 +11,33 @@ package testThread;
  * To change this template use File | Settings | File Templates.
  */
 public class TestThread implements Runnable {
-    static int sum = 0;
+    int num = 0;
 
 
-    public TestThread(int sum) {
-        this.sum = sum;
+    public TestThread(int num) {
+        this.num = num;
     }
-
-    public TestThread() {
-
-    }
-
 
     public static void main(String[] args) {
-        for (int i = 0; i < 5; i++) {
-            TestThread testThread = new TestThread();
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        Long stattime = System.currentTimeMillis();
+        for (int i = 0; i < 500; i++) {
+            TestThread testThread = new TestThread(i);
             Thread thread = new Thread(testThread);
             thread.start();
-
+            //executorService.execute(testThread);
         }
+        Long endtime = System.currentTimeMillis();
+        System.out.println("执行时间(ms)：" + (endtime - stattime));
     }
 
     @Override
     public void run() {
-        synchronized (TestThread.class) {
-            for (int l = 0; l < 10; l++) {
-                System.out.println(Thread.currentThread().getName() + "：" + l);
-            }
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+        System.out.println(Thread.currentThread().getName() + "：" + num);
     }
 }
