@@ -19,7 +19,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
@@ -41,7 +41,7 @@ public class HttpUtil {
     private HttpClient httpClient;
 
     public HttpUtil() {
-        httpClient = new DefaultHttpClient();
+        httpClient = HttpClients.createDefault();
     }
 
     public HttpUtil clone() {
@@ -57,14 +57,22 @@ public class HttpUtil {
     }
 
     public String doGetString(String url, Map params) {
-        return doGet(url, params).toString();
+        Object ob = doGet(url, params);
+        if (ob == null) {
+            ob = doGetString(url, params);
+        }
+        return ob.toString();
     }
 
     public byte[] doGetByte(String url, Map params) {
-        return (byte[]) doGet(url, params);
+        Object ob = doGet(url, params);
+        if (ob == null) {
+            ob = doGetByte(url, params);
+        }
+        return (byte[]) ob;
     }
 
-    private Object doGet(String url, Map params) {
+    public Object doGet(String url, Map params) {
         /* 建立HTTPGet对象 */
         String paramStr = "";
         if (params != null) {
@@ -82,9 +90,7 @@ public class HttpUtil {
             url += paramStr;
         }
         HttpGet httpRequest = new HttpGet(url);
-        /*HttpHost proxy =new HttpHost("218.75.100.114",8080,"http");
-        RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
-        httpRequest.setConfig(config);*/
+        setHeader(httpRequest);
         if (cookies != null) {
             httpRequest.setHeader("Cookie", cookies);
         }
@@ -92,20 +98,24 @@ public class HttpUtil {
             /* 发送请求并等待响应 */
             HttpResponse httpResponse = httpClient.execute(httpRequest);
             /* 若状态码为200 ok */
-            if (httpResponse.getStatusLine().getStatusCode() == 200) {
-                /* 读返回数据 */
-                getCookies(httpResponse);
-                HttpEntity entity = httpResponse.getEntity();
-                Object result = null;
-                if (entity.getContentType().getValue().startsWith("image")) {
+            getCookies(httpResponse);
+            HttpEntity entity = httpResponse.getEntity();
+            Object result = null;
+            if (entity.getContentType().getValue().startsWith("image")) {
+                if (httpResponse.getStatusLine().getStatusCode() == 200) {
                     result = EntityUtils.toByteArray(entity);
                 } else {
-                    result = EntityUtils.toString(entity, getcharset(httpResponse));
+                    System.out.println("image:" + httpResponse.getStatusLine().getStatusCode());
                 }
-                httpRequest.abort();
-                return result;
             } else {
+                if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                    result = EntityUtils.toString(entity, getcharset(httpResponse));
+                } else {
+                    System.out.println("NOT image:" + httpResponse.getStatusLine().getStatusCode());
+                }
             }
+            httpRequest.abort();
+            return result;
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (IOException e) {

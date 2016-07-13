@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package until;
 
 import java.sql.Date;
@@ -18,12 +26,14 @@ import java.util.Locale;
  */
 public class DateUtil {
 
+    private static String pattern = "yyyy-MM-dd";
+
     public static void main(String[] args) {
         // Date testDate = DateUtil.getNextDay(Date.valueOf("2007-1-7"));
         // log.debug(DateFormatUtils.format(testDate.getTime(), "yyyy-MM-dd
         // hh:mm:ss"));
 
-        System.out.println("|" + DateUtil.StringToDate2("2016-05-03")
+        System.out.println("|" + DateUtil.getNowDateTime()
                 + "|");
 
     }
@@ -152,6 +162,8 @@ public class DateUtil {
         return new Date(cal.getTime().getTime());
     }
 
+    // 去年同期
+
     // 年初
     public static Date getLastYearLastDay(Date date) {
         Calendar cal = Calendar.getInstance();
@@ -161,8 +173,6 @@ public class DateUtil {
         cal.add(Calendar.DATE, -1);
         return new Date(cal.getTime().getTime());
     }
-
-    // 去年同期
 
     public static Date getLastYearThisDay(Date date) {
         Calendar cal = Calendar.getInstance();
@@ -390,6 +400,7 @@ public class DateUtil {
             return null;
         }
     }
+
     public static java.sql.Date StringToDate3(String strDate) {
         try {
             String year = strDate.substring(0, 4);
@@ -576,7 +587,6 @@ public class DateUtil {
 
     }
 
-
     public static String toFormatedString(Timestamp timestamp, String format) {
 
         DateFormat df = new SimpleDateFormat(format);
@@ -588,7 +598,6 @@ public class DateUtil {
         DateFormat df = new SimpleDateFormat(format);
         return df.format(date);
     }
-
 
     public static String toString(Timestamp date) {
 
@@ -727,8 +736,6 @@ public class DateUtil {
         // return yy + "-" + mm + "-" + dd;
 
     }
-
-    private static String pattern = "yyyy-MM-dd";
 
     public static String getServerDate(String format) {
         java.text.SimpleDateFormat dateformat = new java.text.SimpleDateFormat(
