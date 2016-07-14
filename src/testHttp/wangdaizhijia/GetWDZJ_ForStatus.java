@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.wangdaizhijia;
 
 import net.sf.json.JSONObject;
@@ -26,14 +34,13 @@ import java.util.regex.Pattern;
  */
 public class GetWDZJ_ForStatus extends Thread {
     private static Logger logger = Logger.getLogger("GetWDZJ.class");
-
-    private int sucessCount = 0;
-    private int dateCount = 0;
     TestConn testConn;
     PreparedStatement ps;
     Statement statement2;
     int start;
     int end;
+    private int sucessCount = 0;
+    private int dateCount = 0;
 
     public GetWDZJ_ForStatus(int sucessCount, int dateCount, TestConn testConn, PreparedStatement preparedStatement, Statement statement2, int start, int end) {
         this.sucessCount = sucessCount;
@@ -50,7 +57,7 @@ public class GetWDZJ_ForStatus extends Thread {
             int j = 1;
             for (int i = 1; i < 129; i += 8) {
                 String sql = new String("update cred_wdzj_platinfo set splatstatus = ? where splatid = ?");
-                TestConn testConn = new TestConn();
+                TestConn testConn = TestConn.getInstance();
                 GetWDZJ_ForStatus getWDZJ = new GetWDZJ_ForStatus(0, 0, testConn, testConn.creatPStatement(sql), testConn.creatStatement(), i, i + 8);
                 Thread thread = new Thread(getWDZJ);
 

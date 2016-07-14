@@ -1,13 +1,21 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.suyincaifu;
 
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.htmlparser.util.ParserException;
 import testFile.ReadWriteFileWithEncode;
-import testHttp.httpUtil.TestHttp;
 import testHttp.dao.TestConn;
 import testHttp.httpUtil.HtmlParser;
 import testHttp.httpUtil.HttpRespons;
+import testHttp.httpUtil.TestHttp;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -26,15 +34,14 @@ import java.util.Map;
  */
 public class Test_SYCF implements Runnable {
     private static Logger logger = Logger.getLogger("Test_4.class");
-
-    private int sucessCount = 0;
-    private long dateCount = 0;
     TestConn testConn;
     Statement statement;
     Statement statement2;
     int start;
     int end;
     String isNew;
+    private int sucessCount = 0;
+    private long dateCount = 0;
 
     public Test_SYCF(int sucessCount, long dateCount, TestConn testConn, Statement statement, Statement statement2, int start, int end, String isNew) {
         this.sucessCount = sucessCount;
@@ -49,18 +56,18 @@ public class Test_SYCF implements Runnable {
 
     public static void main(String[] args) {
         try {
-            TestConn testConn = new TestConn();
+            TestConn testConn = TestConn.getInstance();
             Test_SYCF test_sycf = new Test_SYCF(0, 1, testConn, testConn.creatStatement(), testConn.creatStatement(), 1, 24, "4");
             Thread thread = new Thread(test_sycf);
             thread.setName("thread1");
             thread.start();
 
-            Test_SYCF test_sycf1 = new Test_SYCF(0, 1, new TestConn(), new TestConn().creatStatement(), new TestConn().creatStatement(), 1, 4, "8");
+            Test_SYCF test_sycf1 = new Test_SYCF(0, 1, testConn, testConn.creatStatement(), testConn.creatStatement(), 1, 4, "8");
             Thread thread1 = new Thread(test_sycf1);
             thread1.setName("thread2");
             thread1.start();
 
-            Test_SYCF test_sycf2 = new Test_SYCF(0, 1, new TestConn(), new TestConn().creatStatement(), new TestConn().creatStatement(), 1, 81,"");
+            Test_SYCF test_sycf2 = new Test_SYCF(0, 1, testConn, testConn.creatStatement(), testConn.creatStatement(), 1, 81, "");
             Thread thread2 = new Thread(test_sycf2);
             thread2.setName("thread3");
             thread2.start();

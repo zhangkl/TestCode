@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.shixinren;
 
 import net.sf.json.JSONObject;
@@ -24,18 +32,18 @@ import java.util.regex.Pattern;
  */
 public class Test_List {
     private static Logger logger = Logger.getLogger("Test_4.class");
-    private int sucessCount = 0;
-    private long dateCount = 0;
     TestConn testConn;
     Statement statement;
     Statement statement2;
+    private int sucessCount = 0;
+    private long dateCount = 0;
 
     public static void main(String[] args) {
         try {
             Test_List tj = new Test_List();
             String path = "D:\\code\\TestCode\\logs\\list.txt";
             File file = new File(path);
-            tj.read(file);
+            read(file);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -48,7 +56,7 @@ public class Test_List {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     new FileInputStream(src), "UTF-8"));
             Test_List tj = new Test_List();
-            tj.testConn = new TestConn();
+            tj.testConn = TestConn.getInstance();
             tj.statement = tj.testConn.creatStatement();
             tj.statement2 = tj.testConn.creatStatement();
             String splatid = null;
@@ -103,7 +111,7 @@ public class Test_List {
     public void saveJson(String json) throws IOException {
         JSONObject jsonObject2 = null;
         try {
-            jsonObject2 = JSONObject.fromObject(json);;
+            jsonObject2 = JSONObject.fromObject(json);
             StringBuffer sql = new StringBuffer();
             sql.append("insert into CRED_DISHONESTY (IID, SSTDSTG, SSTDSTL, DUPDATE_TIME, SLOC, DLASTMOD, SCHANGEFREQ, SPRIORITY, SSITELINK, SINAME, STYPE, SCARDNUM," +
                     " SCASECODE, IAGE, SSEXY, SFOCUSNUMBER, SAREANAME, SBUSINESSENTITY, SCOURTNAME, SDUTY, SPERFORMANCE, SDISRUPTTYPENAME, DPUBLISHDATE, " +

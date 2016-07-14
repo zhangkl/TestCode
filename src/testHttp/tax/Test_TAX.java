@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.tax;
 
 import org.apache.log4j.Logger;
@@ -33,12 +41,11 @@ import java.util.Map;
  */
 public class Test_TAX implements Runnable {
     private static Logger logger = Logger.getLogger("Test_TAX.class");
-
-    private int sucessCount = 0;
-    private long dateCount = 0;
     TestConn testConn;
     Statement statement;
     Statement statement2;
+    private int sucessCount = 0;
+    private long dateCount = 0;
 
     public Test_TAX(int sucessCount, long dateCount, TestConn testConn, Statement statement, Statement statement2) {
         this.sucessCount = sucessCount;
@@ -50,7 +57,7 @@ public class Test_TAX implements Runnable {
 
     public static void main(String[] args) {
         try {
-            TestConn testConn = new TestConn();
+            TestConn testConn = TestConn.getInstance();
             Test_TAX test = new Test_TAX(0, 0, testConn,testConn.creatStatement(),testConn.creatStatement());
             Thread thread = new Thread(test);
             thread.setName("thread");
@@ -169,7 +176,7 @@ public class Test_TAX implements Runnable {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     new FileInputStream(src), "UTF-8"));
             Test_Json tj = new Test_Json();
-            tj.testConn = new TestConn();
+            tj.testConn = TestConn.getInstance();
             tj.statement = tj.testConn.creatStatement();
             tj.statement2 = tj.testConn.creatStatement();
             String line = "";

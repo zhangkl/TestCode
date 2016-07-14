@@ -9,6 +9,7 @@
 package com.dishonest;
 
 import com.dishonest.util.CheckNumber;
+import com.dishonest.util.DateUtil;
 import com.dishonest.util.HttpUtil;
 import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import net.sf.json.JSONObject;
@@ -20,11 +21,11 @@ import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
 import testHttp.dao.TestConn;
-import until.DateUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.StringReader;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.*;
@@ -39,141 +40,48 @@ import java.util.concurrent.Executors;
  * To change this template use File | Settings | File Templates.
  */
 public class TestNum implements Runnable {
-    static int sameAccount;
 
-    String code;
+    static TestConn testConn = TestConn.getInstance();
     String cardNum;
-    int maxPageNum;
-    int minPageNum;
+    int endPageNum;
+    int stratPageNum;
+    int sucessNum;
+    int sameNum;
     HttpUtil httpUtil;
-    static TestConn testConn;
 
-    public TestNum(String code, String cardNum, int minPageNum, int maxPageNum, HttpUtil httpUtil) {
-        this.code = code;
+    public TestNum(String cardNum, int stratPageNum, int endPageNum, HttpUtil httpUtil, int sucessNum, int sameNum) {
         this.cardNum = cardNum;
-        this.minPageNum = minPageNum;
-        this.maxPageNum = maxPageNum;
+        this.stratPageNum = stratPageNum;
+        this.endPageNum = endPageNum;
         this.httpUtil = httpUtil;
+        this.sucessNum = sucessNum;
+        this.sameNum = sameNum;
     }
 
     public static void main(String[] args) throws IOException, SQLException {
-        testConn = new TestConn();
-        ExecutorService threadPool = Executors.newFixedThreadPool(30);
+        ExecutorService threadPool = Executors.newFixedThreadPool(20);
         String querySql = "select * from cred_dishonesty_log ";
+
         List list = testConn.executeQueryForList(querySql);
         Iterator it = list.iterator();
         while (it.hasNext()) {
             Map map = (Map) it.next();
             String cardNum = (String) map.get("CARDNUM");
-            String maxPageNum = (String) map.get("MAXPAGENUM");
-            String minPageNum = (String) map.get("PAGENUM");
-            for (int i = 1; i < Integer.valueOf(maxPageNum); i = i + 100) {
-                HttpUtil httpUtil = new HttpUtil();
-                String code = getImageCode(httpUtil);
-                TestNum testNum = new TestNum(code, cardNum, i, i + 100, httpUtil);
-                threadPool.execute(testNum);
-            }
+            String endpage = (String) map.get("ENDPAGE");
+            String startpage = (String) map.get("STARTPAGE");
+            String sucessNum = (String) map.get("SUCESSNUM");
+            String sameNum = (String) map.get("SAMENUM");
+            HttpUtil httpUtil = new HttpUtil();
+            TestNum testNum = new TestNum(cardNum, Integer.valueOf(startpage), Integer.valueOf(endpage), httpUtil, Integer.valueOf(sucessNum), Integer.valueOf(sameNum));
+            threadPool.execute(testNum);
         }
-    }
-
-
-    @Override
-    public void run() {
-        for (int i = minPageNum; i < maxPageNum; i++) {
-            worker(i + "");
-        }
-    }
-
-    public void worker(String pageNum) {
-        String idInfo = null;
-        try {
-            String sql = "insert into CRED_DISHONESTY_PERSON (IID, SINAME, SCARDNUM, SCASECODE, IAGE, SSEXY, SAREANAME, SCOURTNAME, DREGDATE," +
-                    " SDUTY, SPERFORMANCE, SPERFORMEDPART, SUNPERFORMPART, SDISRUPTTYPENAME, DPUBLISHDATE, SPARTYTYPENAME, SGISTID, SGISTUNIT) " +
-                    "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            String s = httpUtil.doPostString("http://shixin.court.gov.cn/findd",
-                    new Object[]{"pName", "__", "pCardNum", "__________" + cardNum + "____", "pProvince", "0", "currentPage", pageNum, "pCode", code});
-            List arrayList = getIDList(s);
-            if (arrayList == null || arrayList.size() == 0 || s.contains("验证码错误，请重新输入！")) {
-                code = getImageCode(httpUtil);
-                s = httpUtil.doPostString("http://shixin.court.gov.cn/findd",
-                        new Object[]{"pName", "__", "pCardNum", "__________" + cardNum + "____", "pProvince", "0", "currentPage", pageNum, "pCode", code});
-                arrayList = getIDList(s);
-            }
-            for (int i = 0; i < arrayList.size(); i++) {
-                String queryIdSql = "select * from CRED_DISHONESTY_PERSON where iid = '" + arrayList.get(i) + "'";
-                List resultlist = testConn.executeQueryForList(queryIdSql);
-                if (resultlist != null && resultlist.size() > 0) {
-                    sameAccount++;
-                    System.out.println("重复id:" + arrayList.get(i) + ",sameAccount:" + sameAccount);
-                    continue;
-                }
-                Map map = new HashMap();
-                map.put("id", arrayList.get(i));
-                map.put("pCode", code);
-                idInfo = httpUtil.doGetString("http://shixin.court.gov.cn/findDetai", map);
-                if (idInfo == null) {
-                    i--;
-                    continue;
-                }
-                JSONObject json = JSONObject.fromObject(idInfo);
-                Integer iid = json.optInt("id");
-                String siname = json.optString("iname");
-                String scardnum = json.optString("cardNum");
-                String scasecode = json.optString("caseCode");
-                String sage = json.optString("age");
-                Integer iage = Integer.valueOf(sage);
-                String ssexy = json.optString("sexy");
-                String sareaname = json.optString("areaName");
-                String scourtname = json.optString("courtName");
-                String sduty = json.optString("duty");
-                String sperformance = json.optString("performance");
-                String sperformedpart = json.optString("performedpart");
-                String sunperformpart = json.optString("unperformpart");
-                String sdisrupttypename = json.optString("disruptTypeName");
-                String spublishdate = json.optString("publishDate");
-                Date dpublishdate = DateUtil.StringToDate2(spublishdate);
-                String spartytypename = json.optString("partyTypeName");
-                String sgistid = json.optString("gistId");
-                String sregdate = json.optString("regDate");
-                Date dregdate = DateUtil.StringToDate2(sregdate);
-                String sgistunit = json.optString("gistUnit");
-                List list = new ArrayList();
-                list.add(iid);
-                list.add(siname);
-                list.add(scardnum.replace("****", cardNum));
-                list.add(scasecode);
-                list.add(iage);
-                list.add(ssexy);
-                list.add(sareaname);
-                list.add(scourtname);
-                list.add(dregdate);
-                list.add(sduty);
-                list.add(sperformance);
-                list.add(sperformedpart);
-                list.add(sunperformpart);
-                list.add(sdisrupttypename);
-                list.add(dpublishdate);
-                list.add(spartytypename);
-                list.add(sgistid);
-                list.add(sgistunit);
-                testConn.psAdd(sql, list);
-            }
-            String logStr = Thread.currentThread().getName() + ":查询条件：" + cardNum + ",当前页数：" + pageNum + "，总重复个数" + sameAccount + "查询入库完成。";
-            System.out.println(logStr);
-            String logSql = "update cred_dishonesty_log set remark='" + logStr + "',pagenum='" + pageNum + "' where cardnum = '" + cardNum + "'";
-            testConn.executeSave(logSql);
-        } catch (Exception e) {
-            System.out.println(idInfo);
-            e.printStackTrace();
-        }
-
     }
 
     public static String getImageCode(HttpUtil httpUtil) throws IOException {
         long startTime = System.currentTimeMillis();
-        byte[] result = httpUtil.doGetByte("http://shixin.court.gov.cn/image.jsp?date="+System.currentTimeMillis(), null);
+        byte[] result = httpUtil.doGetByte("http://shixin.court.gov.cn/image.jsp?date=" + System.currentTimeMillis(), null);
         ByteInputStream bin = new ByteInputStream();
-        if (result==null){
+        if (result == null) {
             getImageCode(httpUtil);
         }
         bin.setBuf(result);
@@ -198,7 +106,6 @@ public class TestNum implements Runnable {
         }
         return page;
     }
-
 
     public static List<String> getIDList(String cons) {
         ArrayList list = new ArrayList();
@@ -246,6 +153,116 @@ public class TestNum implements Runnable {
             }
         }
         return list;
+    }
+
+    @Override
+    public void run() {
+        try {
+            for (int i = stratPageNum; i <= endPageNum; i++) {
+                worker(i + "");
+            }
+            String logSql = "update cred_dishonesty_log set result = '1',dcurrentdate = sysdate where cardnum = '" + cardNum + "'";
+            testConn.executeSave(logSql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void worker(String pageNum) throws InterruptedException {
+        String idInfo = null;
+        try {
+            String code = getImageCode(httpUtil);
+            String sql = "insert into CRED_DISHONESTY_PERSON (IID, SINAME, SCARDNUM, SCASECODE, IAGE, SSEXY, SAREANAME, SCOURTNAME, DREGDATE," +
+                    " SDUTY, SPERFORMANCE, SPERFORMEDPART, SUNPERFORMPART, SDISRUPTTYPENAME, DPUBLISHDATE, SPARTYTYPENAME, SGISTID, SGISTUNIT) " +
+                    "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String s = httpUtil.doPostString("http://shixin.court.gov.cn/findd",
+                    "pName", "__", "pCardNum", "__________" + cardNum + "____", "pProvince", "0", "currentPage", pageNum, "pCode", code);
+            if (s == null) {
+                code = getImageCode(httpUtil);
+                s = httpUtil.doPostString("http://shixin.court.gov.cn/findd",
+                        "pName", "__", "pCardNum", "__________" + cardNum + "____", "pProvince", "0", "currentPage", pageNum, "pCode", code);
+            }
+            List arrayList = getIDList(s);
+            if (arrayList == null || arrayList.size() == 0 || s.contains("验证码错误，请重新输入！")) {
+                code = getImageCode(httpUtil);
+                s = httpUtil.doPostString("http://shixin.court.gov.cn/findd",
+                        "pName", "__", "pCardNum", "__________" + cardNum + "____", "pProvince", "0", "currentPage", pageNum, "pCode", code);
+                arrayList = getIDList(s);
+            }
+            for (int i = 0; i < arrayList.size(); i++) {
+                String queryIdSql = "select * from CRED_DISHONESTY_PERSON where iid = '" + arrayList.get(i) + "'";
+                List resultlist = testConn.executeQueryForList(queryIdSql);
+                if (resultlist != null && resultlist.size() > 0) {
+                    sameNum++;
+                    System.out.println("重复id:" + arrayList.get(i) + ",sameAccount:" + sameNum);
+                    continue;
+                }
+                Map map = new HashMap();
+                map.put("id", arrayList.get(i));
+                map.put("pCode", code);
+                idInfo = httpUtil.doGetString("http://shixin.court.gov.cn/findDetai", map);
+                if (idInfo == null) {
+                    i--;
+                    continue;
+                }
+                JSONObject json = JSONObject.fromObject(idInfo);
+                Integer iid = json.optInt("id");
+                String siname = json.optString("iname");
+                String scardnum = json.optString("cardNum");
+                String scasecode = json.optString("caseCode");
+                String sage = json.optString("age");
+                Integer iage = Integer.valueOf(sage);
+                String ssexy = json.optString("sexy");
+                String sareaname = json.optString("areaName");
+                String scourtname = json.optString("courtName");
+                String sduty = json.optString("duty");
+                String sperformance = json.optString("performance");
+                String sperformedpart = json.optString("performedpart");
+                String sunperformpart = json.optString("unperformpart");
+                String sdisrupttypename = json.optString("disruptTypeName");
+                String spublishdate = json.optString("publishDate");
+                Date dpublishdate = DateUtil.StringToDate2(spublishdate);
+                String spartytypename = json.optString("partyTypeName");
+                String sgistid = json.optString("gistId");
+                String sregdate = json.optString("regDate");
+                Date dregdate = DateUtil.StringToDate2(sregdate);
+                String sgistunit = json.optString("gistUnit");
+                List list = new ArrayList();
+                list.add(iid);
+                list.add(siname);
+                list.add(scardnum.replace("****", cardNum));
+                list.add(scasecode);
+                list.add(iage);
+                list.add(ssexy);
+                list.add(sareaname);
+                list.add(scourtname);
+                list.add(dregdate);
+
+                StringReader reader = new StringReader(sduty);
+                list.add(reader);
+
+                list.add(sperformance);
+                list.add(sperformedpart);
+                list.add(sunperformpart);
+                list.add(sdisrupttypename);
+                list.add(dpublishdate);
+                list.add(spartytypename);
+                list.add(sgistid);
+                list.add(sgistunit);
+                testConn.psAdd(sql, list);
+                sucessNum++;
+            }
+            String logStr = Thread.currentThread().getName() + ":查询条件：" + cardNum + ",当前页数：" + pageNum + "，总重复个数" + sameNum + "查询入库完成。";
+            System.out.println(logStr);
+            String logSql = "update cred_dishonesty_log set samenum = '" + sameNum + "',sucessnum='" + sucessNum + "', remark='" + logStr + "',startpage='" + pageNum + "',dcurrentdate = sysdate where cardnum = '" + cardNum + "'";
+            testConn.executeSave(logSql);
+        } catch (Exception e) {
+            System.out.println(idInfo);
+            throw new InterruptedException();
+        }
+
     }
 
 }

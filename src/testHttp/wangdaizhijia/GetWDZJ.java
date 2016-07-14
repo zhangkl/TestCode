@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.wangdaizhijia;
 
 import net.sf.json.JSONObject;
@@ -12,9 +20,9 @@ import org.htmlparser.tags.TableTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import testFile.ReadWriteFileWithEncode;
+import testHttp.dao.TestConn;
 import testHttp.httpUtil.HttpRespons;
 import testHttp.httpUtil.TestHttp;
-import testHttp.dao.TestConn;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -37,15 +45,14 @@ import java.util.regex.Pattern;
  */
 public class GetWDZJ extends Thread {
     private static Logger logger = Logger.getLogger("GetWDZJ.class");
-
-    private int sucessCount = 0;
-    private int excount = 0;
-    private int dateCount = 0;
     TestConn testConn;
     PreparedStatement ps;
     Statement statement2;
     int start;
     int end;
+    private int sucessCount = 0;
+    private int excount = 0;
+    private int dateCount = 0;
 
     public GetWDZJ(int sucessCount, int dateCount, TestConn testConn, PreparedStatement preparedStatement, Statement statement2, int start, int end) {
         this.sucessCount = sucessCount;
@@ -67,7 +74,7 @@ public class GetWDZJ extends Thread {
                         "SORGCODE,STAXREGISTRATIONNUM,SFILINGURL,SFILINGURLDATE,SFILINGTYPE,SFILINGCOMPANYNAME,SFILINGIPCNUM,SMANAGEFEE,SRECHARGEFEE," +
                         "SCASHOUTFEE,SVIPFEE,STRANSFERFEE,SPAYTYPE,SADDR,SSERVICETEL,SCOMPANYTEL,SCOMPANYFAX,SSERVICEMAIL,SP2PORGCODE,SPLATSTATUS) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?," +
                         "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-                TestConn testConn = new TestConn();
+            TestConn testConn = TestConn.getInstance();
             GetWDZJ getWDZJ = new GetWDZJ(0, 0, testConn, testConn.creatPStatement(sql), testConn.creatStatement(), 128, 150);
                 Thread thread = new Thread(getWDZJ);
                 thread.start();
@@ -111,7 +118,7 @@ public class GetWDZJ extends Thread {
             int splatStatus = (Integer) map.get("platStatus");
             String platPin = (String) map.get("platPin");
             String splaturl = (String) map.get("platUrl");
-            String slocationareaname = (String) map.get("locationAreaName")+","+(String) map.get("locationCityName");
+            String slocationareaname = map.get("locationAreaName") + "," + map.get("locationCityName");
             String sonlinedate = (String) map.get("onlineDate");
             String splatearnings = map.get("platEarnings").toString();
             Double iregisteredcapital = Double.parseDouble(map.get("registeredCapital").toString());
@@ -205,7 +212,7 @@ public class GetWDZJ extends Thread {
                     TableRow[] rows = tag.getRows();
                     for (int j = 0; j < rows.length; j++) {
                         List<String> tdlist = new ArrayList();
-                        TableRow tr = (TableRow) rows[j];
+                        TableRow tr = rows[j];
                         TableColumn[] td = tr.getColumns();
                         for (int k = 0; k < td.length; k++) {
                             tdlist.add(td[k].toPlainTextString().trim());

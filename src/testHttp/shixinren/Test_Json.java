@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.shixinren;
 
 import net.sf.json.JSONObject;
@@ -19,11 +27,11 @@ import java.sql.Timestamp;
  */
 public class Test_Json {
     private static Logger logger = Logger.getLogger("Test_4.class");
-    private int sucessCount = 0;
-    private long dateCount = 0;
     public TestConn testConn;
     public Statement statement;
     public Statement statement2;
+    private int sucessCount = 0;
+    private long dateCount = 0;
 
     public static void main(String[] args) {
         try {
@@ -32,7 +40,7 @@ public class Test_Json {
             File file = new File(path);
             tj.read(file);*/
             Test_Json tj = new Test_Json();
-            tj.testConn = new TestConn();
+            tj.testConn = TestConn.getInstance();
             tj.statement = tj.testConn.creatStatement();
             tj.statement2 = tj.testConn.creatStatement();
             tj.saveJson("{\n" +
@@ -80,7 +88,7 @@ public class Test_Json {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     new FileInputStream(src), "UTF-16"));
             Test_Json tj = new Test_Json();
-            tj.testConn = new TestConn();
+            tj.testConn = TestConn.getInstance();
             tj.statement = tj.testConn.creatStatement();
             tj.statement2 = tj.testConn.creatStatement();
             while ((line = reader.readLine()) != null) {
@@ -104,7 +112,7 @@ public class Test_Json {
     public void saveJson(String json) throws IOException {
         JSONObject jsonObject2 = null;
         try {
-            jsonObject2 = JSONObject.fromObject(json);;
+            jsonObject2 = JSONObject.fromObject(json);
             StringBuffer sql = new StringBuffer();
             sql.append("insert into CRED_DISHONESTY (IID, SSTDSTG, SSTDSTL, DUPDATE_TIME, SLOC, DLASTMOD, SCHANGEFREQ, SPRIORITY, SSITELINK, SINAME, STYPE, SCARDNUM," +
                     " SCASECODE, IAGE, SSEXY, SFOCUSNUMBER, SAREANAME, SBUSINESSENTITY, SCOURTNAME, SDUTY, SPERFORMANCE, SDISRUPTTYPENAME, DPUBLISHDATE, " +

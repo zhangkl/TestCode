@@ -6,7 +6,7 @@
  * Vestibulum commodo. Ut rhoncus gravida arcu.
  ******************************************************************************/
 
-package until;
+package com.dishonest.util;
 
 import java.sql.Date;
 import java.sql.Timestamp;

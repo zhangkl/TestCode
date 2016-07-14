@@ -1,12 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.shixinren;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import testFile.ReadWriteFileWithEncode;
-import testHttp.httpUtil.TestHttp;
 import testHttp.dao.TestConn;
 import testHttp.httpUtil.HttpRespons;
+import testHttp.httpUtil.TestHttp;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -27,15 +35,14 @@ import java.util.Map;
  */
 public class Test_4 implements Runnable {
     private static Logger logger = Logger.getLogger("Test_4.class");
-
-    private int sucessCount = 0;
-    private long dateCount = 0;
     TestConn testConn;
     Statement statement;
     Statement statement2;
     int start;
     int end;
     int pn;
+    private int sucessCount = 0;
+    private long dateCount = 0;
 
     public Test_4(int sucessCount, long dateCount, TestConn testConn, Statement statement, Statement statement2, int start,int end,int pn) {
         this.sucessCount = sucessCount;
@@ -57,26 +64,23 @@ public class Test_4 implements Runnable {
                 thread.setName("thread:"+i+"--"+(i+50));
                 thread.start();
             }*/
-            TestConn testConn = new TestConn();
+            TestConn testConn = TestConn.getInstance();
             Test_4 test = new Test_4(0, 0, testConn,testConn.creatStatement(),testConn.creatStatement(),2110,2150,700);
             Thread thread = new Thread(test);
             thread.setName("thread:2100-2150");
             thread.start();
 
-            TestConn testConn1 = new TestConn();
-            Test_4 test1 = new Test_4(0, 0, testConn1,testConn1.creatStatement(),testConn1.creatStatement(),1911,1950,100);
+            Test_4 test1 = new Test_4(0, 0, testConn, testConn.creatStatement(), testConn.creatStatement(), 1911, 1950, 100);
             Thread thread1 = new Thread(test1);
             thread1.setName("thread:1900-1950");
             thread1.start();
 
-            TestConn testConn2 = new TestConn();
-            Test_4 test2 = new Test_4(0, 0, testConn2,testConn2.creatStatement(),testConn2.creatStatement(),1811,1850,500);
+            Test_4 test2 = new Test_4(0, 0, testConn, testConn.creatStatement(), testConn.creatStatement(), 1811, 1850, 500);
             Thread thread2 = new Thread(test2);
             thread2.setName("thread:1800-1850");
             thread2.start();
 
-            TestConn testConn3 = new TestConn();
-            Test_4 test3 = new Test_4(0, 0, testConn3,testConn3.creatStatement(),testConn3.creatStatement(),1410,1450,1050);
+            Test_4 test3 = new Test_4(0, 0, testConn, testConn.creatStatement(), testConn.creatStatement(), 1410, 1450, 1050);
             Thread thread3 = new Thread(test3);
             thread3.setName("thread:1400-1450");
             thread3.start();

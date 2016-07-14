@@ -9,6 +9,7 @@
 package testHttp.dao;
 
 
+import java.io.StringReader;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,16 +29,16 @@ public class TestConn {
     ConnectionPool conPool;
 
     //初始化连接
-    public TestConn() {
+    private TestConn() {
         try {
-            conPool = new ConnectionPool("oracle.jdbc.driver.OracleDriver", dbUrl, theUser, thePw, 50);
+            conPool = new ConnectionPool("oracle.jdbc.driver.OracleDriver", dbUrl, theUser, thePw, 30);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) {
-
+    public static TestConn getInstance() {
+        return SingletonFactory.testConn;
     }
 
     public Statement creatStatement() {
@@ -122,6 +123,8 @@ public class TestConn {
                     ps.setInt(i + 1, (Integer) list.get(i));
                 } else if (list.get(i) instanceof Date) {
                     ps.setDate(i + 1, (Date) list.get(i));
+                } else if (list.get(i) instanceof StringReader) {
+                    ps.setCharacterStream(i + 1, (StringReader) list.get(i), 50000);
                 } else {
                     ps.setString(i + 1, (String) list.get(i));
                 }
@@ -155,4 +158,9 @@ public class TestConn {
         }
         return 0;
     }
+
+    private static class SingletonFactory {
+        private static TestConn testConn = new TestConn();
+    }
+
 }

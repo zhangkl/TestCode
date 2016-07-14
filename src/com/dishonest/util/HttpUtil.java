@@ -9,12 +9,10 @@
 package com.dishonest.util;
 
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -35,9 +33,11 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class HttpUtil {
+    boolean isProxy = true;
     private HashMap<String, String> mapCookies = new HashMap<String, String>();
     private String cookies = null;
-
+    private String proxyURL = "61.175.220.4";
+    private int proxyPort = 3128;
     private HttpClient httpClient;
 
     public HttpUtil() {
@@ -90,6 +90,14 @@ public class HttpUtil {
             url += paramStr;
         }
         HttpGet httpRequest = new HttpGet(url);
+
+        if (isProxy) {
+            // 依次是代理地址，代理端口号，协议类型
+            HttpHost proxy = new HttpHost(proxyURL, proxyPort, "http");
+            RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
+            httpRequest.setConfig(config);
+        }
+
         setHeader(httpRequest);
         if (cookies != null) {
             httpRequest.setHeader("Cookie", cookies);
@@ -132,7 +140,11 @@ public class HttpUtil {
         for (int i = 0; i < paramlist.length / 2; i++) {
             map.put(paramlist[i * 2].toString(), paramlist[i * 2 + 1]);
         }
-        return doPost(url, map).toString();
+        Object object = doPost(url, map);
+        if (object != null) {
+            return object.toString();
+        } else
+            return null;
     }
 
     private Object doPost(String url, Map map) {
@@ -148,6 +160,14 @@ public class HttpUtil {
         }
 
         HttpPost httpRequest = new HttpPost(url);
+
+        if (isProxy) {
+            // 依次是代理地址，代理端口号，协议类型
+            HttpHost proxy = new HttpHost(proxyURL, proxyPort, "http");
+            RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
+            httpRequest.setConfig(config);
+        }
+
         setHeader(httpRequest);
         if (cookies != null) {
             httpRequest.setHeader("Cookie", cookies);

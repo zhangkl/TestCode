@@ -1,12 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.shixinren;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import testFile.ReadWriteFileWithEncode;
-import testHttp.httpUtil.TestHttp;
 import testHttp.dao.TestConn;
 import testHttp.httpUtil.HttpRespons;
+import testHttp.httpUtil.TestHttp;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -32,6 +40,12 @@ public class Test_Array implements Runnable {
     private static String[] cardNumArray1 = {"005","0050","0051","0052","0053","0054","0056","0057","0058","0059","031","0310","0311","0312","0313","0314","0315","0316","0317","0318","0319","051","0510","0511","0512","0513","0514","0515","0516","0517","0518","0519"};
     private static String[] cardNumArray2 = {"0610","0611","0612","0613","0615","0617","0618","0817","101","1010","1011","1012","1013","1014","1015","1016","1017","1018","1019","121","1210","1211","1212","1213","1214","1215","1217","1218","1219","151","1510","1511"};
     private static String[] cardNumArray3 = {"1512","1513","1514","1515","1516","1517","1518","1519","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","3010","3011","3012","3013","3014","3015","3016","3017","3018","3019"};
+    TestConn testConn;
+    Statement statement;
+    Statement statement2;
+    int start;
+    int end;
+    int pn;
     /*private static String[] cardNumArray1 = {"1512","0011","0311","1211","0611","1513","0012","1212","0612","0312","1514","1213","0013","0613","0313"};
     private static String[] cardNumArray2 = { "1515","1214","0014","0314","3010","1516","2010","0315","1215","0015","0510","3011","1517","1010","0016"};
     private static String[] cardNumArray3 = { "0316","2011","0511","3012","1518","1011","0317","0017","2012","0512","3013","1519","1012","2013","0318"};
@@ -51,12 +65,6 @@ public class Test_Array implements Runnable {
     //private static String[] cardNumArray = {"001","301","201"};
     private int sucessCount = 0;
     private long dateCount = 0;
-    TestConn testConn;
-    Statement statement;
-    Statement statement2;
-    int start;
-    int end;
-    int pn;
 
     public Test_Array(int sucessCount, long dateCount, TestConn testConn, Statement statement, Statement statement2, String[] cardNumArray, int pn) {
         this.sucessCount = sucessCount;
@@ -64,32 +72,29 @@ public class Test_Array implements Runnable {
         this.testConn = testConn;
         this.statement = statement;
         this.statement2 = statement2;
-        this.cardNumArray = cardNumArray;
+        Test_Array.cardNumArray = cardNumArray;
         this.pn = pn;
     }
 
     public static void main(String[] args) {
         try {
-            TestConn testConn = new TestConn();
+            TestConn testConn = TestConn.getInstance();
             Test_Array test4 = new Test_Array(0, 0, testConn,testConn.creatStatement(),testConn.creatStatement(),cardNumArray,0);
             Thread thread = new Thread(test4);
             thread.setName("thread:"+0);
             thread.start();
 
-            TestConn testConn1 = new TestConn();
-            Test_Array test1 = new Test_Array(0, 0, testConn1,testConn1.creatStatement(),testConn1.creatStatement(),cardNumArray1,0);
+            Test_Array test1 = new Test_Array(0, 0, testConn, testConn.creatStatement(), testConn.creatStatement(), cardNumArray1, 0);
             Thread thread1 = new Thread(test1);
             thread1.setName("thread:" + 1);
             thread1.start();
 
-            TestConn testConn2 = new TestConn();
-            Test_Array test2 = new Test_Array(0, 0, testConn2,testConn2.creatStatement(),testConn2.creatStatement(),cardNumArray2,0);
+            Test_Array test2 = new Test_Array(0, 0, testConn, testConn.creatStatement(), testConn.creatStatement(), cardNumArray2, 0);
             Thread thread2 = new Thread(test2);
             thread2.setName("thread:" + 2);
             thread2.start();
 
-            TestConn testConn3 = new TestConn();
-            Test_Array test3 = new Test_Array(0, 0, testConn3,testConn3.creatStatement(),testConn3.creatStatement(),cardNumArray3,0);
+            Test_Array test3 = new Test_Array(0, 0, testConn, testConn.creatStatement(), testConn.creatStatement(), cardNumArray3, 0);
             Thread thread3 = new Thread(test3);
             thread3.setName("thread:" + 3);
             thread3.start();

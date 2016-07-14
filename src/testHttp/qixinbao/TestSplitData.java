@@ -1,12 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.qixinbao;
 
+import com.dishonest.util.DateUtil;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.annotations.common.util.StringHelper;
 import testHttp.dao.TestConn;
-import until.DateUtil;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -46,7 +54,7 @@ public class TestSplitData implements Runnable {
             String inserEntPerSql = "insert into CRED_ENTPRISE_PERSON_INFO (IID, SORGANIZATIONCODE, SPERSONTYPE, SPERSONNAME, SUBSCRIBEDMONEY, SREALMONEY, SPERSONOFFICE, SREMARK, IENTID)" +
                     "values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             for (int i = 0; i < 1; i++) {
-                TestConn testConn = new TestConn();
+                TestConn testConn = TestConn.getInstance();
                 PreparedStatement ps = testConn.creatPStatement(getDateSql);
                 ps.setInt(1, i * 30);
                 ps.setInt(2, (i + 1) * 30);

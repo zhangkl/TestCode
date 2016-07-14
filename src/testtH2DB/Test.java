@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testtH2DB;
 
 import org.h2.tools.Server;
@@ -20,7 +28,7 @@ public class Test {
         Server.createTcpServer().start();
         /*statement.execute("DROP TABLE IF EXISTS TEST");
         statement.execute("CREATE TABLE TEST(NAME VARCHAR)");*/
-        TestConn testConn = new TestConn();
+        TestConn testConn = TestConn.getInstance();
         Statement ora_statement = testConn.creatStatement();
         String sql = "select * from CRED_DISHONESTY";
         ResultSet rs = ora_statement.executeQuery(sql);
@@ -64,7 +72,7 @@ public class Test {
     }
 
     public static void ora_db() throws SQLException {
-        TestConn testConn = new TestConn();
+        TestConn testConn = TestConn.getInstance();
         Statement ora_statement = testConn.creatStatement();
         String sql = "select * from CRED_DISHONESTY";
         ResultSet rs = ora_statement.executeQuery(sql);

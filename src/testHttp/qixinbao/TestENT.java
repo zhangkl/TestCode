@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.qixinbao;
 
 import com.gargoylesoftware.htmlunit.CookieManager;
@@ -17,7 +25,7 @@ public class TestENT {
         try {
             String getDateSql = "select * from (select rownum r,t.* from cred_ent_url t where remark is null) a where a.r > ? and a.r <= ?";
             for (int i = 0; i < 1; i++) {
-                TestConn testConn = new TestConn();
+                TestConn testConn = TestConn.getInstance();
                 PreparedStatement ps = testConn.creatPStatement(getDateSql);
                 ps.setInt(1, i * 300);
                 ps.setInt(2, (i + 1) * 300);
@@ -36,12 +44,12 @@ public class TestENT {
 }
 
 class GetENTDate extends Thread {
+    static boolean flag = false;
     int sucessCount = 0;
     TestConn testConn;
     Statement statement;
     String url;
     ResultSet resultSet;
-    static boolean flag = false;
 
 
     public GetENTDate(int sucessCount, TestConn testConn, Statement statement, ResultSet resultSet) {

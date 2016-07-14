@@ -1,9 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.helidai;
 
+import testHttp.dao.TestConn;
 import testHttp.httpUtil.HtmlParser;
 import testHttp.httpUtil.HttpRespons;
 import testHttp.httpUtil.TestHttp;
-import testHttp.dao.TestConn;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -21,6 +29,35 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class GetHLD extends Thread {
+
+    int startPage;
+    int endPage;
+    int line;
+    TestConn testConn;
+    Statement statement;
+    Statement statement2;
+
+    public GetHLD(int startPage, int endPage, int line, TestConn testConn, Statement statement, Statement statement2) {
+        this.startPage = startPage;
+        this.endPage = endPage;
+        this.line = line;
+        this.testConn = testConn;
+        this.statement = statement;
+        this.statement2 = statement2;
+    }
+
+    public static void main(String[] args) throws IOException {
+        int j = 1;
+        for (int i = 1; i < 211; i += 19) {
+            TestConn testConn = TestConn.getInstance();
+            GetHLD getHLD = new GetHLD(i, i + 19, 0, testConn, testConn.creatStatement(), testConn.creatStatement());
+            System.out.println(getHLD.startPage + "," + getHLD.endPage);
+            getHLD.setName("Thread" + j);
+            getHLD.start();
+            j++;
+        }
+
+    }
 
     public void run() {
         try {
@@ -81,22 +118,6 @@ public class GetHLD extends Thread {
         statement.execute(sql.toString());
     }
 
-    int startPage;
-    int endPage;
-    int line;
-    TestConn testConn;
-    Statement statement;
-    Statement statement2;
-
-    public GetHLD(int startPage, int endPage,int line, TestConn testConn, Statement statement, Statement statement2) {
-        this.startPage = startPage;
-        this.endPage = endPage;
-        this.line = line;
-        this.testConn = testConn;
-        this.statement = statement;
-        this.statement2 = statement2;
-    }
-
     private synchronized int getSeqNextVal(String seqName) throws SQLException {
         ResultSet newrs;
         int id = 0;
@@ -109,18 +130,5 @@ public class GetHLD extends Thread {
             e.printStackTrace();
         }
         return id;
-    }
-
-    public static void main(String[] args) throws IOException {
-        int j = 1;
-        for (int i = 1; i < 211; i+=19) {
-            TestConn testConn = new TestConn();
-            GetHLD getHLD = new GetHLD(i,i+19,0,testConn,testConn.creatStatement(),testConn.creatStatement());
-            System.out.println(getHLD.startPage+","+getHLD.endPage);
-            getHLD.setName("Thread" + j);
-            getHLD.start();
-            j++;
-        }
-
     }
 }
