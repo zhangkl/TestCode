@@ -30,7 +30,7 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class HttpUtil {
-    boolean isProxy = false;
+    boolean isProxy = true;
     private HashMap<String, String> mapCookies = new HashMap<String, String>();
     private String cookies = null;
     private String proxyURL = "36.46.223.97";

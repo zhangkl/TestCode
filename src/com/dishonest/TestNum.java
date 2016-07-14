@@ -62,7 +62,7 @@ public class TestNum implements Runnable {
     }
 
     public static void main(String[] args) throws IOException, SQLException {
-        ExecutorService threadPool = Executors.newFixedThreadPool(30);
+        ExecutorService threadPool = Executors.newFixedThreadPool(20);
         String querySql = "select * from cred_dishonesty_log ";
         List list = TestConn.getInstance().executeQueryForList(querySql);
         Iterator it = list.iterator();
@@ -164,6 +164,7 @@ public class TestNum implements Runnable {
     public void run() {
         try {
             for (int i = stratPageNum; i <= endPageNum; i++) {
+                System.out.println(Thread.currentThread().getName() + ":" + i);
                 worker(i + "");
             }
             String logSql = "update cred_dishonesty_log set result = '1',dcurrentdate = sysdate where cardnum = '" + cardNum + "'";
@@ -176,7 +177,7 @@ public class TestNum implements Runnable {
     public void worker(String pageNum) {
         String idInfo = null;
         try {
-            if (code != null) {
+            if (code == null) {
                 code = getImageCode(httpUtil);
             }
             String sql = "insert into CRED_DISHONESTY_PERSON (IID, SINAME, SCARDNUM, SCASECODE, IAGE, SSEXY, SAREANAME, SCOURTNAME, DREGDATE," +
