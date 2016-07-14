@@ -8,6 +8,7 @@
 
 package com.dishonest;
 
+import com.dishonest.dao.TestConn;
 import com.dishonest.util.CheckNumber;
 import com.dishonest.util.DateUtil;
 import com.dishonest.util.HttpUtil;
@@ -20,7 +21,6 @@ import org.htmlparser.filters.HasAttributeFilter;
 import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
-import testHttp.dao.TestConn;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -41,15 +41,18 @@ import java.util.concurrent.Executors;
  */
 public class TestNum implements Runnable {
 
-    static TestConn testConn = TestConn.getInstance();
+    TestConn testConn = TestConn.getInstance();
+
     String cardNum;
     int endPageNum;
     int stratPageNum;
     int sucessNum;
     int sameNum;
+    String code;
     HttpUtil httpUtil;
 
-    public TestNum(String cardNum, int stratPageNum, int endPageNum, HttpUtil httpUtil, int sucessNum, int sameNum) {
+    public TestNum(String code, String cardNum, int stratPageNum, int endPageNum, HttpUtil httpUtil, int sucessNum, int sameNum) {
+        this.code = code;
         this.cardNum = cardNum;
         this.stratPageNum = stratPageNum;
         this.endPageNum = endPageNum;
@@ -59,10 +62,9 @@ public class TestNum implements Runnable {
     }
 
     public static void main(String[] args) throws IOException, SQLException {
-        ExecutorService threadPool = Executors.newFixedThreadPool(20);
+        ExecutorService threadPool = Executors.newFixedThreadPool(30);
         String querySql = "select * from cred_dishonesty_log ";
-
-        List list = testConn.executeQueryForList(querySql);
+        List list = TestConn.getInstance().executeQueryForList(querySql);
         Iterator it = list.iterator();
         while (it.hasNext()) {
             Map map = (Map) it.next();
@@ -72,12 +74,15 @@ public class TestNum implements Runnable {
             String sucessNum = (String) map.get("SUCESSNUM");
             String sameNum = (String) map.get("SAMENUM");
             HttpUtil httpUtil = new HttpUtil();
-            TestNum testNum = new TestNum(cardNum, Integer.valueOf(startpage), Integer.valueOf(endpage), httpUtil, Integer.valueOf(sucessNum), Integer.valueOf(sameNum));
+            TestNum testNum = new TestNum(null, cardNum, Integer.valueOf(startpage), Integer.valueOf(endpage), httpUtil, Integer.valueOf(sucessNum), Integer.valueOf(sameNum));
+            /*Thread thread = new Thread(testNum);
+            thread.start();*/
             threadPool.execute(testNum);
         }
     }
 
-    public static String getImageCode(HttpUtil httpUtil) throws IOException {
+    public static String getImageCode(HttpUtil httpUtil) throws IOException, InterruptedException {
+        System.out.println("获取验证码...");
         long startTime = System.currentTimeMillis();
         byte[] result = httpUtil.doGetByte("http://shixin.court.gov.cn/image.jsp?date=" + System.currentTimeMillis(), null);
         ByteInputStream bin = new ByteInputStream();
@@ -165,15 +170,15 @@ public class TestNum implements Runnable {
             testConn.executeSave(logSql);
         } catch (SQLException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
-    public void worker(String pageNum) throws InterruptedException {
+    public void worker(String pageNum) {
         String idInfo = null;
         try {
-            String code = getImageCode(httpUtil);
+            if (code != null) {
+                code = getImageCode(httpUtil);
+            }
             String sql = "insert into CRED_DISHONESTY_PERSON (IID, SINAME, SCARDNUM, SCASECODE, IAGE, SSEXY, SAREANAME, SCOURTNAME, DREGDATE," +
                     " SDUTY, SPERFORMANCE, SPERFORMEDPART, SUNPERFORMPART, SDISRUPTTYPENAME, DPUBLISHDATE, SPARTYTYPENAME, SGISTID, SGISTUNIT) " +
                     "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -260,7 +265,7 @@ public class TestNum implements Runnable {
             testConn.executeSave(logSql);
         } catch (Exception e) {
             System.out.println(idInfo);
-            throw new InterruptedException();
+            e.printStackTrace();
         }
 
     }

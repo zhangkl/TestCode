@@ -8,11 +8,11 @@
 
 package testHttp.suyincaifu;
 
+import com.dishonest.dao.TestConn;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.htmlparser.util.ParserException;
 import testFile.ReadWriteFileWithEncode;
-import testHttp.dao.TestConn;
 import testHttp.httpUtil.HtmlParser;
 import testHttp.httpUtil.HttpRespons;
 import testHttp.httpUtil.TestHttp;

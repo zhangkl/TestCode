@@ -8,10 +8,10 @@
 
 package testHttp.wangdaizhijia;
 
+import com.dishonest.dao.TestConn;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.htmlparser.util.ParserException;
-import testHttp.dao.TestConn;
 import testHttp.httpUtil.HttpRespons;
 import testHttp.httpUtil.TestHttp;
 

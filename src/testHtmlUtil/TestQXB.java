@@ -1,11 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHtmlUtil;
 
+import com.dishonest.dao.TestConn;
 import com.gargoylesoftware.htmlunit.CookieManager;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.Cookie;
-import testHttp.dao.TestConn;
 
 import java.io.IOException;
 import java.sql.Statement;
@@ -21,12 +29,12 @@ public class TestQXB implements Runnable {
     static String url;
 
     public TestQXB(int startPage, int endPage, int sucessCount, TestConn testConn, Statement statement, String url) {
-        this.startPage = startPage;
-        this.endPage = endPage;
-        this.sucessCount = sucessCount;
-        this.testConn = testConn;
-        this.statement = statement;
-        this.url = url;
+        TestQXB.startPage = startPage;
+        TestQXB.endPage = endPage;
+        TestQXB.sucessCount = sucessCount;
+        TestQXB.testConn = testConn;
+        TestQXB.statement = statement;
+        TestQXB.url = url;
     }
 
     public static void main(String[] args) throws Exception {

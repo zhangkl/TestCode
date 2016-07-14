@@ -1,9 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.shixinren;
 
+import com.dishonest.dao.TestConn;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
-import testHttp.dao.TestConn;
 import testHttp.httpUtil.HttpRespons;
 import testHttp.httpUtil.TestHttp;
 
@@ -28,7 +36,6 @@ import java.util.Map;
 public class Dishonesty_ENT implements Runnable {
     private static Logger logger = Logger.getLogger("Test_ENT.class");
     private static int sucessCount;
-    private int dataCount = 0;
     private static long sameAccount;
     TestConn testConn;
     String cardNum;
@@ -36,6 +43,7 @@ public class Dishonesty_ENT implements Runnable {
     int pn;
     Statement statement;
     Statement statement2;
+    private int dataCount = 0;
 
     public Dishonesty_ENT(TestConn testConn, Statement statement, Statement statement2, String cardNum, String areaName, int pn, int dataCount, int sucessCount) {
         this.testConn = testConn;
@@ -45,7 +53,7 @@ public class Dishonesty_ENT implements Runnable {
         this.dataCount = dataCount;
         this.statement = statement;
         this.statement2 = statement2;
-        this.sucessCount = sucessCount;
+        Dishonesty_ENT.sucessCount = sucessCount;
     }
 
     public Dishonesty_ENT(String cardNum, String areaName, int dataCount) {

@@ -8,6 +8,7 @@
 
 package testHttp.tax;
 
+import com.dishonest.dao.TestConn;
 import org.apache.log4j.Logger;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -16,7 +17,6 @@ import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import testFile.ReadWriteFileWithEncode;
-import testHttp.dao.TestConn;
 import testHttp.httpUtil.HtmlParser;
 import testHttp.shixinren.Test_Json;
 
@@ -176,9 +176,6 @@ public class Test_TAX implements Runnable {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     new FileInputStream(src), "UTF-8"));
             Test_Json tj = new Test_Json();
-            tj.testConn = TestConn.getInstance();
-            tj.statement = tj.testConn.creatStatement();
-            tj.statement2 = tj.testConn.creatStatement();
             String line = "";
             while ((line = reader.readLine()) != null) {
                 List<String> list = new ArrayList<String>();

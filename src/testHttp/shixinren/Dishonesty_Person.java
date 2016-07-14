@@ -1,9 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testHttp.shixinren;
 
+import com.dishonest.dao.TestConn;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
-import testHttp.dao.TestConn;
 import testHttp.httpUtil.HttpRespons;
 import testHttp.httpUtil.TestHttp;
 
@@ -28,17 +36,16 @@ import java.util.Map;
  * pn为起始条数，每次查询返回50条数据  当查询结果大于2000条时，百度只返回前2000条数据
  */
 public class Dishonesty_Person implements Runnable {
-    private static Logger logger = Logger.getLogger("Test_Person.class");
-
-    public int sucessCount = 0;//各线程成功个数统计
-    public long dataCount = 0;//当前url个数总计
-    public long sameAccount = 0;//当前url个数总计
     static TestConn testConn;
     static Statement statement; //数据库链接
     static Statement statement2;//获取序列用
+    private static Logger logger = Logger.getLogger("Test_Person.class");
+    public int sucessCount = 0;//各线程成功个数统计
+    public long dataCount = 0;//当前url个数总计
+    public long sameAccount = 0;//当前url个数总计
+    public int pn;
     int start;
     int end;
-    public int pn;
     boolean isOver;//当前查询条件是否已经更新完成
     String areaName;
     String cardNum;
@@ -46,9 +53,9 @@ public class Dishonesty_Person implements Runnable {
     public Dishonesty_Person(int sucessCount, long dataCount, TestConn testConn, Statement statement, Statement statement2, int start, int end, int pn, boolean isOver, int sameAccount) {
         this.sucessCount = sucessCount;
         this.dataCount = dataCount;
-        this.testConn = testConn;
-        this.statement = statement;
-        this.statement2 = statement2;
+        Dishonesty_Person.testConn = testConn;
+        Dishonesty_Person.statement = statement;
+        Dishonesty_Person.statement2 = statement2;
         this.start = start;
         this.end = end;
         this.pn = pn;
@@ -62,6 +69,19 @@ public class Dishonesty_Person implements Runnable {
         this.dataCount = dataCount;
     }
 
+    private static synchronized int getSeqNextVal(String seqName) throws SQLException {
+        ResultSet newrs;
+        int id = 0;
+        try {
+            newrs = statement2.executeQuery("select " + seqName + ".nextval as id from dual");
+            if (newrs.next()) {
+                id = newrs.getInt(1);
+            }
+        } catch (SQLException e) {
+            logger.error("", e);
+        }
+        return id;
+    }
 
     @Override
     public void run() {
@@ -246,19 +266,5 @@ public class Dishonesty_Person implements Runnable {
             }
         }
 
-    }
-
-    private static synchronized int getSeqNextVal(String seqName) throws SQLException {
-        ResultSet newrs;
-        int id = 0;
-        try {
-            newrs = statement2.executeQuery("select " + seqName + ".nextval as id from dual");
-            if (newrs.next()) {
-                id = newrs.getInt(1);
-            }
-        } catch (SQLException e) {
-            logger.error("", e);
-        }
-        return id;
     }
 }

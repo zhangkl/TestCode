@@ -8,11 +8,11 @@
 
 package testHttp.qixinbao;
 
+import com.dishonest.dao.TestConn;
 import com.gargoylesoftware.htmlunit.CookieManager;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
 import com.gargoylesoftware.htmlunit.util.Cookie;
-import testHttp.dao.TestConn;
 
 import java.io.StringReader;
 import java.sql.PreparedStatement;

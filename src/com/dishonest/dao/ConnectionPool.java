@@ -1,4 +1,13 @@
-package testHttp.dao;
+
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
+package com.dishonest.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -45,7 +54,12 @@ public class ConnectionPool {
                     return con;
                 }
             }
-            con = getNewConnection();
+            try {
+                connections.wait(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            con = getConnection();
             connections.put(con, Boolean.TRUE);
             return con;
         }

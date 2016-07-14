@@ -8,6 +8,7 @@
 
 package testHttp.wangdaizhijia;
 
+import com.dishonest.dao.TestConn;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.hibernate.internal.util.StringHelper;
@@ -20,7 +21,6 @@ import org.htmlparser.tags.TableTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import testFile.ReadWriteFileWithEncode;
-import testHttp.dao.TestConn;
 import testHttp.httpUtil.HttpRespons;
 import testHttp.httpUtil.TestHttp;
 

@@ -8,7 +8,7 @@
 
 package testHttp.helidai;
 
-import testHttp.dao.TestConn;
+import com.dishonest.dao.TestConn;
 import testHttp.httpUtil.HtmlParser;
 import testHttp.httpUtil.HttpRespons;
 import testHttp.httpUtil.TestHttp;

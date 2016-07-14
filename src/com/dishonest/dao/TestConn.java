@@ -6,7 +6,7 @@
  * Vestibulum commodo. Ut rhoncus gravida arcu.
  ******************************************************************************/
 
-package testHttp.dao;
+package com.dishonest.dao;
 
 
 import java.io.StringReader;
@@ -19,7 +19,6 @@ import java.util.Map;
 public class TestConn {
 
     //几个数据库变量
-    public Connection connection = null;
     //dbUrl数据库连接串信息，其中“1521”为端口，“ora9”为sid
     String dbUrl = "jdbc:oracle:thin:@192.168.0.196:1521:cred";
     //theUser为数据库用户名
@@ -31,7 +30,7 @@ public class TestConn {
     //初始化连接
     private TestConn() {
         try {
-            conPool = new ConnectionPool("oracle.jdbc.driver.OracleDriver", dbUrl, theUser, thePw, 30);
+            conPool = new ConnectionPool("oracle.jdbc.driver.OracleDriver", dbUrl, theUser, thePw, 50);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -44,7 +43,7 @@ public class TestConn {
     public Statement creatStatement() {
         Statement statement = null;
         try {
-            connection = conPool.getConnection();
+            Connection connection = conPool.getConnection();
             statement = connection.createStatement();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -55,7 +54,7 @@ public class TestConn {
     public PreparedStatement creatPStatement(String sql) {
         PreparedStatement ps = null;
         try {
-            connection = conPool.getConnection();
+            Connection connection = conPool.getConnection();
             ps = connection.prepareStatement(sql);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -69,7 +68,7 @@ public class TestConn {
         ResultSet rs = null;
         Statement statement = null;
         try {
-            connection = conPool.getConnection();
+            Connection connection = conPool.getConnection();
             statement = connection.createStatement();
             rs = statement.executeQuery(sql);
             ResultSetMetaData md = rs.getMetaData(); //得到结果集(rs)的结构信息，比如字段数、字段名等
@@ -98,7 +97,7 @@ public class TestConn {
         ResultSet rs = null;
         Statement statement = null;
         try {
-            connection = conPool.getConnection();
+            Connection connection = conPool.getConnection();
             statement = connection.createStatement();
             rs = statement.executeQuery(sql);
             conPool.returnConnection(connection);
@@ -116,7 +115,7 @@ public class TestConn {
     public void psAdd(String sql, List list) throws SQLException {
         PreparedStatement ps = null;
         try {
-            connection = conPool.getConnection();
+            Connection connection = conPool.getConnection();
             ps = connection.prepareStatement(sql);
             for (int i = 0; i < list.size(); i++) {
                 if (list.get(i) instanceof Integer) {
@@ -132,7 +131,7 @@ public class TestConn {
             ps.execute();
             conPool.returnConnection(connection);
         } catch (SQLException e) {
-            throw e;
+
         } finally {
             if (ps != null) {
                 ps.close();
@@ -143,7 +142,7 @@ public class TestConn {
     public int executeSave(String sql) throws SQLException {
         Statement statement = null;
         try {
-            connection = conPool.getConnection();
+            Connection connection = conPool.getConnection();
             statement = connection.createStatement();
             if (statement.execute(sql)) {
                 return 1;
@@ -162,5 +161,6 @@ public class TestConn {
     private static class SingletonFactory {
         private static TestConn testConn = new TestConn();
     }
+
 
 }
