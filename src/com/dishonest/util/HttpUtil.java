@@ -10,6 +10,7 @@ package com.dishonest.util;
 
 
 import org.apache.http.*;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -20,6 +21,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -30,18 +32,32 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class HttpUtil {
-    boolean isProxy = true;
+    boolean isProxy = false;
+    String proxyURL;
+    int proxyPort;
     private HashMap<String, String> mapCookies = new HashMap<String, String>();
     private String cookies = null;
-    private String proxyURL = "36.46.223.97";
-    private int proxyPort = 8998;
     private HttpClient httpClient;
-
     private int sendTimes = 0;
     private int maxTimes = 5;
 
+    public HttpUtil(boolean isProxy, String proxyURL) {
+        this.isProxy = isProxy;
+        this.proxyURL = proxyURL.split(":")[0];
+        this.proxyPort = Integer.parseInt(proxyURL.split(":")[1]);
+        httpClient = HttpClients.createDefault();
+    }
     public HttpUtil() {
         httpClient = HttpClients.createDefault();
+    }
+
+    public String getProxyURL() {
+        return proxyURL + ":" + proxyPort;
+    }
+
+    public void setProxyURL(String proxyURL) {
+        this.proxyURL = proxyURL.split(":")[0];
+        this.proxyPort = Integer.parseInt(proxyURL.split(":")[1]);
     }
 
     public HttpUtil clone() {
@@ -57,22 +73,29 @@ public class HttpUtil {
     }
 
     public String doGetString(String url, Map params) throws InterruptedException {
-        Object ob = doGet(url, params);
-        if (ob == null) {
-            ob = doGetString(url, params);
-        }
-        return ob.toString();
-    }
-
-    public byte[] doGetByte(String url, Map params) throws InterruptedException {
         Object object;
         do {
             object = doGet(url, params);
             sendTimes++;
             if (object == null) {
-                Thread.sleep(120000);
+                System.out.println(Thread.currentThread().getName() + ":" + url + ":" + params + ",doGetByte获取错误次数" + sendTimes + ",线程休眠");
+                Thread.sleep(10000);
             }
         } while (sendTimes <= maxTimes && object == null);
+        sendTimes = 0;
+        return object.toString();
+    }
+
+    public byte[] doGetByte(String url, Map params) throws InterruptedException, ClassCastException {
+        Object object;
+        do {
+            object = doGet(url, params);
+            sendTimes++;
+            if (object == null) {
+                System.out.println(Thread.currentThread().getName() + ":" + url + ":" + params + ",doGetByte获取错误次数" + sendTimes + ",线程休眠");
+                Thread.sleep(10000);
+            }
+        } while (sendTimes <= maxTimes && (object == null || object instanceof String));
         sendTimes = 0;
         return (byte[]) object;
     }
@@ -96,8 +119,8 @@ public class HttpUtil {
         }
         HttpGet httpRequest = new HttpGet(url);
         RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(10000).setConnectionRequestTimeout(10000)
-                .setSocketTimeout(10000).build();
+                .setConnectTimeout(30000).setConnectionRequestTimeout(30000)
+                .setSocketTimeout(30000).build();
         httpRequest.setConfig(requestConfig);
 
         if (isProxy) {
@@ -111,43 +134,35 @@ public class HttpUtil {
         if (cookies != null) {
             httpRequest.setHeader("Cookie", cookies);
         }
+        String errorInfo = "验证码错误:";
         try {
             /* 发送请求并等待响应 */
             HttpResponse httpResponse = httpClient.execute(httpRequest);
-            System.out.println(httpResponse.getStatusLine().getStatusCode());
             /* 若状态码为200 ok */
             getCookies(httpResponse);
-            HttpEntity entity = httpResponse.getEntity();
-            Object result = null;
-            if (entity.getContentType().getValue().startsWith("image")) {
-                if (httpResponse.getStatusLine().getStatusCode() == 200) {
+            if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                /* 读返回数据 */
+                getCookies(httpResponse);
+                HttpEntity entity = httpResponse.getEntity();
+                Object result = null;
+                if (entity.getContentType().getValue().startsWith("image")) {
                     result = EntityUtils.toByteArray(entity);
                 } else {
-                    System.out.println("image:" + httpResponse.getStatusLine().getStatusCode());
-                    Thread.sleep(120000);
-                }
-            } else {
-                if (httpResponse.getStatusLine().getStatusCode() == 200) {
                     result = EntityUtils.toString(entity, getcharset(httpResponse));
-                } else {
-                    Thread.sleep(120000);
-                    System.out.println("NOT image:" + httpResponse.getStatusLine().getStatusCode());
                 }
-            }
-            httpRequest.abort();
-            sendTimes = 0;
-            return result;
-        } catch (Exception exception) {
-            if (sendTimes <= maxTimes) {
-                Thread.sleep(120000);
-                doGet(url, params);
-                sendTimes++;
+                httpRequest.abort();
+                sendTimes = 0;
+                return result;
             } else {
-                exception.printStackTrace();
+                errorInfo += Thread.currentThread().getName() + ":" + url + ",doGet请求响应码：" + httpResponse.getStatusLine().getStatusCode();
             }
+        } catch (ClientProtocolException e) {
+            errorInfo += Thread.currentThread().getName() + ":" + url + ",调用doGet异常：" + e.getMessage();
+        } catch (IOException e) {
+            errorInfo += Thread.currentThread().getName() + ":" + url + ",调用doGet异常：" + e.getMessage();
         }
         httpRequest.abort();
-        return null;
+        return errorInfo;
     }
 
     public String doPostString(String url, final Object... paramlist) throws InterruptedException {
@@ -160,7 +175,8 @@ public class HttpUtil {
             object = doPost(url, map);
             sendTimes++;
             if (object == null) {
-                Thread.sleep(120000);
+                System.out.println(Thread.currentThread().getName() + ":" + url + ":" + map + ":doPost获取错误次数" + sendTimes + ",线程休眠");
+                Thread.sleep(10000);
             }
         } while (sendTimes <= maxTimes && object == null);
         sendTimes = 0;
@@ -181,8 +197,8 @@ public class HttpUtil {
 
         HttpPost httpRequest = new HttpPost(url);
         RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(10000).setConnectionRequestTimeout(10000)
-                .setSocketTimeout(10000).build();
+                .setConnectTimeout(30000).setConnectionRequestTimeout(30000)
+                .setSocketTimeout(30000).build();
         httpRequest.setConfig(requestConfig);
         if (isProxy) {
             // 依次是代理地址，代理端口号，协议类型
@@ -195,6 +211,7 @@ public class HttpUtil {
         if (cookies != null) {
             httpRequest.setHeader("Cookie", cookies);
         }
+        String errorInfo = "验证码错误";
         try {
             /* 添加请求参数到请求对象 */
             httpRequest.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
@@ -215,19 +232,14 @@ public class HttpUtil {
                 sendTimes = 0;
                 return result;
             } else {
-                Thread.sleep(120000);
+                errorInfo += Thread.currentThread().getName() + ":" + url + ":" + params + ",post请求响应码：" + httpResponse.getStatusLine().getStatusCode();
             }
+
         } catch (Exception exception) {
-            if (sendTimes <= maxTimes) {
-                Thread.sleep(120000);
-                doPost(url, map);
-                sendTimes++;
-            } else {
-                exception.printStackTrace();
-            }
+            errorInfo += Thread.currentThread().getName() + ":" + url + ":" + params + ",调用doPost异常：" + exception.getMessage();
         }
         httpRequest.abort();
-        return null;
+        return errorInfo;
     }
 
     private void setHeader(HttpRequestBase http) {

@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 //
 // Source code recreated from a .class file by IntelliJ IDEA
 // (powered by Fernflower decompiler)
@@ -5,6 +13,7 @@
 
 package testHttp.httpUtil;
 
+import com.dishonest.dao.TestConn;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.common.util.StringHelper;
 import org.htmlparser.NodeFilter;
@@ -19,182 +28,35 @@ import org.htmlparser.util.ParserException;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 public class HtmlParser {
+    private static final String SiteName = "";
     private static Logger logger;
     private Connection conn = null;
-    private static final String SiteName = "";
 
     public HtmlParser() {
     }
 
-    public static void main(String[] args) throws IOException, ParserException, InterruptedException {
-        String s = "\n" +
-                "\n" +
-                "\n" +
-                "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
-                "\n" +
-                "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
-                "<head>\n" +
-                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n" +
-                "<title>全国法院失信被执行人名单信息公布与查询</title>\n" +
-                "<link href=\"/static/style/style.css\" type=\"text/css\" rel=\"stylesheet\" media=\"screen, projection\" />\n" +
-                "<script language=\"javascript\" type=\"text/javascript\" src=\"/static/javascript/jquery-latest.js\"></script>\n" +
-                "<script language=\"javascript\" type=\"text/javascript\" src=\"/static/javascript/search.js\"></script>\n" +
-                "<script type=\"text/javascript\" type=\"text/javascript\" src=\"/static/javascript/visit.js\"></script>\n" +
-                "<script>\n" +
-                "var contextPath = '';\n" +
-                "var totalPage = 1084;\n" +
-                "</script>\n" +
-                "</head>\n" +
-                "<body>\n" +
-                "\t<div style=\"padding: 14px 60px;\" id=\"ResultlistBlock\">\n" +
-                "\t\t<h4 style=\"text-align: left; padding: 8px; margin: 0;\">\n" +
-                "\t\t\t对<span style=\"color: red; padding: 4px;\">\"__\"</span>的查询结果：\n" +
-                "\t\t</h4>\n" +
-                "\t\t<table width=\"100%\" border=\"0\" align=\"center\" cellpadding=\"3\"\n" +
-                "\t\t\tcellspacing=\"0\" class=\"Resultlist\" id=\"Resultlist\">\n" +
-                "\t\t\t<tbody>\n" +
-                "\t\t\t\t<tr>\n" +
-                "\t\t\t\t\t<th width=\"30\" align=\"center\">序号</th>\n" +
-                "\t\t\t\t\t<th nowrap=\"nowrap\" align=\"center\">被执行人姓名/名称</th>\n" +
-                "\t\t\t\t\t<th width=\"120\" align=\"center\">立案时间</th>\n" +
-                "\t\t\t\t\t<th nowrap=\"nowrap\" align=\"center\">案号</th>\n" +
-                "<!-- \t\t\t\t\t<th width=\"60\" align=\"center\">关注</th> -->\n" +
-                "\t\t\t\t\t<th width=\"60\" align=\"center\">查看</th>\n" +
-                "\t\t\t\t</tr>\n" +
-                "\n" +
-                "\t\t\t\t\n" +
-                "\t\t\t\t<tr style=\"height:28px;\">\n" +
-                "\t\t\t\t\t<td align=\"center\">1</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"吴缨\">吴缨</a></td>\n" +
-                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)京0105执9239号</td>\n" +
-                "\n" +
-                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4651433\">查看</a>]\n" +
-                "\t\t\t\t\t</td>\n" +
-                "\t\t\t\t</tr>\n" +
-                "\t\t\t\t\n" +
-                "\t\t\t\t<tr style=\"height:28px;\">\n" +
-                "\t\t\t\t\t<td align=\"center\">2</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"林雄\">林雄</a></td>\n" +
-                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)闽0102执01774号</td>\n" +
-                "\n" +
-                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4730119\">查看</a>]\n" +
-                "\t\t\t\t\t</td>\n" +
-                "\t\t\t\t</tr>\n" +
-                "\t\t\t\t\n" +
-                "\t\t\t\t<tr style=\"height:28px;\">\n" +
-                "\t\t\t\t\t<td align=\"center\">3</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"方冠人\">方冠人</a></td>\n" +
-                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)湘0421执326号</td>\n" +
-                "\n" +
-                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4536932\">查看</a>]\n" +
-                "\t\t\t\t\t</td>\n" +
-                "\t\t\t\t</tr>\n" +
-                "\t\t\t\t\n" +
-                "\t\t\t\t<tr style=\"height:28px;\">\n" +
-                "\t\t\t\t\t<td align=\"center\">4</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"兰瑞\">兰瑞</a></td>\n" +
-                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)豫1527执349号</td>\n" +
-                "\n" +
-                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4451670\">查看</a>]\n" +
-                "\t\t\t\t\t</td>\n" +
-                "\t\t\t\t</tr>\n" +
-                "\t\t\t\t\n" +
-                "\t\t\t\t<tr style=\"height:28px;\">\n" +
-                "\t\t\t\t\t<td align=\"center\">5</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"林明星\">林明星</a></td>\n" +
-                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)闽0921执00509号</td>\n" +
-                "\n" +
-                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4529774\">查看</a>]\n" +
-                "\t\t\t\t\t</td>\n" +
-                "\t\t\t\t</tr>\n" +
-                "\t\t\t\t\n" +
-                "\t\t\t\t<tr style=\"height:28px;\">\n" +
-                "\t\t\t\t\t<td align=\"center\">6</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"刘志远\">刘志远</a></td>\n" +
-                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)冀1182执257号</td>\n" +
-                "\n" +
-                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4470961\">查看</a>]\n" +
-                "\t\t\t\t\t</td>\n" +
-                "\t\t\t\t</tr>\n" +
-                "\t\t\t\t\n" +
-                "\t\t\t\t<tr style=\"height:28px;\">\n" +
-                "\t\t\t\t\t<td align=\"center\">7</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"王道稽\">王道稽</a></td>\n" +
-                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)闽0982执00688号</td>\n" +
-                "\n" +
-                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4525986\">查看</a>]\n" +
-                "\t\t\t\t\t</td>\n" +
-                "\t\t\t\t</tr>\n" +
-                "\t\t\t\t\n" +
-                "\t\t\t\t<tr style=\"height:28px;\">\n" +
-                "\t\t\t\t\t<td align=\"center\">8</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"陈夫柱\">陈夫柱</a></td>\n" +
-                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)苏1302执1827号</td>\n" +
-                "\n" +
-                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4420400\">查看</a>]\n" +
-                "\t\t\t\t\t</td>\n" +
-                "\t\t\t\t</tr>\n" +
-                "\t\t\t\t\n" +
-                "\t\t\t\t<tr style=\"height:28px;\">\n" +
-                "\t\t\t\t\t<td align=\"center\">9</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"李从江\">李从江</a></td>\n" +
-                "\t\t\t\t\t<td align=\"center\">2016年06月06日</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)豫1422执426号</td>\n" +
-                "\n" +
-                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4399298\">查看</a>]\n" +
-                "\t\t\t\t\t</td>\n" +
-                "\t\t\t\t</tr>\n" +
-                "\t\t\t\t\n" +
-                "\t\t\t\t<tr style=\"height:28px;\">\n" +
-                "\t\t\t\t\t<td align=\"center\">10</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\"><a title=\"林雪勇\">林雪勇</a></td>\n" +
-                "\t\t\t\t\t<td align=\"center\">2016年06月03日</td>\n" +
-                "\t\t\t\t\t<td nowrap=\"nowrap\" align=\"left\">(2016)闽0213执00769号</td>\n" +
-                "\n" +
-                "\t\t\t\t\t<td align=\"center\">[<a href=\"javascript:void(0);\" class=\"View\" id=\"4547130\">查看</a>]\n" +
-                "\t\t\t\t\t</td>\n" +
-                "\t\t\t\t</tr>\n" +
-                "\t\t\t\t\n" +
-                "\t\t\t</tbody>\n" +
-                "\t\t</table>\n" +
-                "\t\t<div align=\"right\">\n" +
-                "\t\t\t\n" +
-                "\t\t\t\t<a href=\"javascript:void(0);\" onclick=\"gotoPage(1)\">首页</a>\n" +
-                "\t\t\t\t<a href=\"javascript:void(0);\" onclick=\"gotoPage(9)\">上一页 </a>\n" +
-                "\t\t\t\n" +
-                "\t\t\t\n" +
-                "\t\t\t\n" +
-                "\t\t\t\t<a href=\"javascript:void(0);\" onclick=\"gotoPage(11)\">下一页</a>\n" +
-                "\t\t\t\t<a href=\"javascript:void(0);\" onclick=\"gotoPage(1084)\">尾页</a>\n" +
-                "\t\t\t\n" +
-                "\t\t\t\n" +
-                "\t\t\t\n" +
-                "\t\t\t<input onclick=\"jumpTo()\" value=\"到\" type=\"button\" /> <input id=\"pagenum\" name=\"pagenum\" maxlength=\"6\" value=\"\" size=\"4\" type=\"text\" /> 页 10/1084 共10838条\n" +
-                "\t\t</div>\n" +
-                "\t</div>\n" +
-                "\t<form id=\"searchForm\" action=\"/findd\" method=\"post\">\n" +
-                "\t\t<input type=\"hidden\" id=\"currentPage\" name=\"currentPage\" value=\"10\"/>\n" +
-                "\t\t<input type=\"hidden\" id=\"pName\" name=\"pName\" value=\"__\"/>\n" +
-                "        <input type=\"hidden\" id=\"pCardNum\" name=\"pCardNum\" value=\"__________1111____\"/>\n" +
-                "        <input type=\"hidden\" id=\"pProvince\" name=\"pProvince\" value=\"0\"/>\n" +
-                "\t\t<input type=\"hidden\" id=\"pCode\" name=\"pCode\" />\n" +
-                "\t</form>\t\t\t\t\n" +
-                "</body>\n" +
-                "</html>\n" +
-                "\n";
-        System.out.println(getLink("", s));
-        getPage("", s);
+    public static void main(String[] args) throws IOException, ParserException, InterruptedException, SQLException {
+        getProxy("http://www.youdaili.net/Daili/guonei/4711.html");
+    }
+
+    public static void getProxy(String url) throws ParserException, SQLException {
+        Parser parser = new Parser(url);
+        parser.setEncoding("utf-8");
+        NodeFilter filter1 = new HasAttributeFilter("class", "cont_font");
+        NodeFilter filter2 = new TagNameFilter("div");
+        AndFilter contentFilter = new AndFilter(filter1, filter2);
+        NodeList nodes = parser.extractAllNodesThatMatch(contentFilter);
+        System.out.println(nodes.asString());
+        String[] strings = nodes.asString().split("\n");
+        for (int i = 4; i < strings.length - 5; i++) {
+            System.out.println(i + ":" + strings[i].split("@")[0]);
+            TestConn.getInstance().executeSave("insert into cred_dishonesty_proxy (proxyurl,dgetdata,isusered) values ('" + strings[i].split("@")[0] + "',sysdate,0)");
+        }
+
     }
 
     public static Map<String, String> getData(String url, String content, NodeFilter nodeFilter) {
@@ -297,7 +159,7 @@ public class HtmlParser {
                 urlString.append("&");
             }
 
-            urlString.append(key).append("=").append((String) map.get(key));
+            urlString.append(key).append("=").append(map.get(key));
         }
 
         return urlString.toString();

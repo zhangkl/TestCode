@@ -40,6 +40,11 @@ public class TestConn {
         return SingletonFactory.testConn;
     }
 
+    public static void main(String[] args) throws SQLException {
+        Map map = TestConn.getInstance().executeQueryForMap("select * from cred_dishonesty_proxy where isusered = 1");
+        System.out.println(map == null);
+    }
+
     public Statement creatStatement() {
         Statement statement = null;
         try {
@@ -65,7 +70,7 @@ public class TestConn {
     //执行查询
     public List executeQueryForList(String sql) throws SQLException {
         List list = new ArrayList();
-        ResultSet rs = null;
+        ResultSet rs;
         Statement statement = null;
         try {
             Connection connection = conPool.getConnection();
@@ -73,7 +78,7 @@ public class TestConn {
             rs = statement.executeQuery(sql);
             ResultSetMetaData md = rs.getMetaData(); //得到结果集(rs)的结构信息，比如字段数、字段名等
             int columnCount = md.getColumnCount(); //返回此 ResultSet 对象中的列数
-            Map rowData = new HashMap();
+            Map rowData;
             while (rs.next()) {
                 rowData = new HashMap(columnCount);
                 for (int i = 1; i <= columnCount; i++) {
@@ -90,6 +95,35 @@ public class TestConn {
             }
         }
         return list;
+    }
+
+    //执行查询
+    public Map executeQueryForMap(String sql) throws SQLException {
+        ResultSet rs = null;
+        Map rowData = new HashMap();
+        Statement statement = null;
+        try {
+            Connection connection = conPool.getConnection();
+            statement = connection.createStatement();
+            rs = statement.executeQuery(sql);
+            ResultSetMetaData md = rs.getMetaData(); //得到结果集(rs)的结构信息，比如字段数、字段名等
+            int columnCount = md.getColumnCount(); //返回此 ResultSet 对象中的列数
+            if (rs.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    rowData.put(md.getColumnName(i), rs.getObject(i));
+                }
+            } else {
+                return null;
+            }
+            conPool.returnConnection(connection);
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+        }
+        return rowData;
     }
 
     //执行查询
@@ -161,6 +195,4 @@ public class TestConn {
     private static class SingletonFactory {
         private static TestConn testConn = new TestConn();
     }
-
-
 }
