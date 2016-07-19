@@ -19,6 +19,9 @@ import java.util.Properties;
 public class ConnectionPool {
     private Hashtable connections = new Hashtable();
     private Properties props;
+    private int sendTime = 0;
+    private int maxSendTime = 5;
+    private long waitTime = 5000;
 
     public ConnectionPool(String driverClassName, String dbURL, String user, String password, int initialConnections) throws SQLException, ClassNotFoundException {
         props = new Properties();
@@ -33,36 +36,36 @@ public class ConnectionPool {
         Connection con = null;
 
         Enumeration cons = connections.keys();
+        do {
+            synchronized (connections) {
+                while (cons.hasMoreElements()) {
+                    con = (Connection) cons.nextElement();
 
-        synchronized (connections) {
-            while (cons.hasMoreElements()) {
-                con = (Connection) cons.nextElement();
-
-                Boolean b = (Boolean) connections.get(con);
-                if (b == Boolean.FALSE) {
-                    try {
-                        con.setAutoCommit(true);
-                    } catch (SQLException e) {
+                    Boolean b = (Boolean) connections.get(con);
+                    if (b == Boolean.FALSE) {
                         try {
-                            con.close();
-                        } catch (SQLException ignored) {
+                            con.setAutoCommit(true);
+                        } catch (SQLException e) {
+                            try {
+                                con.close();
+                            } catch (SQLException ignored) {
+                            }
+                            connections.remove(con);
+                            con = getNewConnection();
                         }
-                        connections.remove(con);
-                        con = getNewConnection();
+                        connections.put(con, Boolean.TRUE);
+                        return con;
                     }
-                    connections.put(con, Boolean.TRUE);
-                    return con;
+                }
+                try {
+                    connections.wait(waitTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-            try {
-                connections.wait(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            con = getConnection();
-            connections.put(con, Boolean.TRUE);
-            return con;
-        }
+        } while (sendTime < maxSendTime && con == null);
+        throw new SQLException("数据库线程池已满,等待" + waitTime + ",重复发送次数：" + sendTime + ",仍无可用线程。");
+
     }
 
     public void returnConnection(Connection returned) {

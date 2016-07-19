@@ -39,22 +39,31 @@ public class HtmlParser {
     public HtmlParser() {
     }
 
-    public static void main(String[] args) throws IOException, ParserException, InterruptedException, SQLException {
-        getProxy("http://www.youdaili.net/Daili/guonei/4711.html");
+    public static void main(String[] args) throws IOException, ParserException, InterruptedException {
+        getProxy("http://www.youdaili.net/Daili/http/4722.html");
     }
 
-    public static void getProxy(String url) throws ParserException, SQLException {
+    public static void getProxy(String url) throws ParserException {
         Parser parser = new Parser(url);
         parser.setEncoding("utf-8");
-        NodeFilter filter1 = new HasAttributeFilter("class", "cont_font");
-        NodeFilter filter2 = new TagNameFilter("div");
+        NodeFilter filter1 = new HasAttributeFilter("style", "font-size:14px;");
+        NodeFilter filter2 = new TagNameFilter("span");
         AndFilter contentFilter = new AndFilter(filter1, filter2);
         NodeList nodes = parser.extractAllNodesThatMatch(contentFilter);
         System.out.println(nodes.asString());
         String[] strings = nodes.asString().split("\n");
-        for (int i = 4; i < strings.length - 5; i++) {
+        for (int i = 0; i < strings.length - 5; i++) {
             System.out.println(i + ":" + strings[i].split("@")[0]);
-            TestConn.getInstance().executeSave("insert into cred_dishonesty_proxy (proxyurl,dgetdata,isusered) values ('" + strings[i].split("@")[0] + "',sysdate,0)");
+            try {
+                TestConn.getInstance().executeSaveOrUpdate("insert into cred_dishonesty_proxy (proxyurl,dgetdata,isusered) values ('" + strings[i].split("@")[0] + "',sysdate,0)");
+            } catch (SQLException e) {
+                if (e.getMessage().contains("ORA-00001: 违反唯一约束条件 (CRED.PK_PROXY)")) {
+                    System.out.println(e.getMessage());
+                    continue;
+                } else {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }

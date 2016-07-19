@@ -97,7 +97,7 @@ public class DateUtil {
     public static Date getMonthLastDay(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        cal.set(Calendar.MONTH, date.getMonth() + 1);
+        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
         cal.set(Calendar.DATE, 1);
         cal.add(Calendar.DATE, -1);
         return new Date(cal.getTime().getTime());
@@ -108,7 +108,7 @@ public class DateUtil {
     public static Date getLastMonthThisDay(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        cal.set(Calendar.MONTH, date.getMonth() - 1);
+        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) - 1);
         return new Date(cal.getTime().getTime());
     }
 
@@ -116,12 +116,12 @@ public class DateUtil {
     public static Date getNextMonthThisDay(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        cal.set(Calendar.MONTH, date.getMonth() + 1);
+        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
         return new Date(cal.getTime().getTime());
     }
 
     // n个月后
-    public static java.sql.Date getNextNMonth(java.sql.Date date, int n) {
+    public static Date getNextNMonth(Date date, int n) {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -137,8 +137,8 @@ public class DateUtil {
     public static Date getSameYearLastMonthThisDay(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        if (date.getMonth() != 1) {
-            cal.set(Calendar.MONTH, date.getMonth() - 1);
+        if (cal.get(Calendar.MONTH) != 1) {
+            cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) - 1);
         }
         cal.set(Calendar.DATE, 1);
         return new Date(cal.getTime().getTime());
@@ -182,78 +182,78 @@ public class DateUtil {
     }
 
     // 昨天
-    public static java.sql.Date yesterday(java.sql.Date date) {
+    public static Date yesterday(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         temp.add(Calendar.DATE, -1);
-        return new java.sql.Date(temp.getTimeInMillis());
+        return new Date(temp.getTimeInMillis());
     }
 
     // 明天
-    public static java.sql.Date tomorrow(java.sql.Date date) {
+    public static Date tomorrow(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         temp.add(Calendar.DATE, 1);
-        return new java.sql.Date(temp.getTimeInMillis());
+        return new Date(temp.getTimeInMillis());
     }
 
     // 上个月
-    public static java.sql.Date lastMonth(java.sql.Date date) {
+    public static Date lastMonth(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         temp.add(Calendar.MONTH, -1);
-        return new java.sql.Date(temp.getTimeInMillis());
+        return new Date(temp.getTimeInMillis());
     }
 
     // 下个月
-    public static java.sql.Date nextMonth(java.sql.Date date) {
+    public static Date nextMonth(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         temp.add(Calendar.MONTH, 1);
-        return new java.sql.Date(temp.getTimeInMillis());
+        return new Date(temp.getTimeInMillis());
     }
 
     // 月末
-    public static java.sql.Date monthEndDay(java.sql.Date date) {
+    public static Date monthEndDay(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         String _endTemp = temp.get(Calendar.YEAR) + "-"
                 + (temp.get(Calendar.MONTH) + 1) + "-" + "01";
-        temp.setTimeInMillis(java.sql.Date.valueOf(_endTemp).getTime());
+        temp.setTimeInMillis(Date.valueOf(_endTemp).getTime());
         temp.add(Calendar.MONTH, 1);
         temp.add(Calendar.DATE, -1);
-        return new java.sql.Date(temp.getTimeInMillis());
+        return new Date(temp.getTimeInMillis());
     }
 
     //
-    public static java.sql.Date lastMonthEndDay(java.sql.Date date) {
+    public static Date lastMonthEndDay(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         String _endTemp = temp.get(Calendar.YEAR) + "-"
                 + (temp.get(Calendar.MONTH) + 1) + "-" + "01";
-        temp.setTimeInMillis(java.sql.Date.valueOf(_endTemp).getTime());
+        temp.setTimeInMillis(Date.valueOf(_endTemp).getTime());
         temp.add(Calendar.DATE, -1);
-        return new java.sql.Date(temp.getTimeInMillis());
+        return new Date(temp.getTimeInMillis());
     }
 
-    public static java.sql.Date monthBeginDay(java.sql.Date date) {
+    public static Date monthBeginDay(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         String _endTemp = temp.get(Calendar.YEAR) + "-"
                 + (temp.get(Calendar.MONTH) + 1) + "-" + "01";
-        return java.sql.Date.valueOf(_endTemp);
+        return Date.valueOf(_endTemp);
     }
 
-    public static java.sql.Date lastMonthBeginDay(java.sql.Date date) {
+    public static Date lastMonthBeginDay(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         String _endTemp = temp.get(Calendar.YEAR) + "-"
                 + (temp.get(Calendar.MONTH) + 1) + "-" + "01";
-        temp.setTimeInMillis(java.sql.Date.valueOf(_endTemp).getTime());
+        temp.setTimeInMillis(Date.valueOf(_endTemp).getTime());
         temp.add(Calendar.DATE, -1);
         _endTemp = temp.get(Calendar.YEAR) + "-"
                 + (temp.get(Calendar.MONTH) + 1) + "-" + "01";
-        return java.sql.Date.valueOf(_endTemp);
+        return Date.valueOf(_endTemp);
     }
 
     /**
@@ -262,11 +262,11 @@ public class DateUtil {
      * @param date 当前时间
      * @return 某一年内的第一天
      */
-    public static java.sql.Date firstOfLastYear(java.sql.Date date) {
+    public static Date firstOfLastYear(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         String s = (temp.get(Calendar.YEAR) - 1) + "-01-01";
-        return java.sql.Date.valueOf(s);
+        return Date.valueOf(s);
     }
 
     /**
@@ -284,7 +284,7 @@ public class DateUtil {
      *
      * @return int
      */
-    public static int getYear(java.sql.Date date) {
+    public static int getYear(Date date) {
         Calendar actualDate = Calendar.getInstance();
         actualDate.setTime(date);
         return actualDate.get(Calendar.YEAR);
@@ -295,7 +295,7 @@ public class DateUtil {
      *
      * @return int
      */
-    public static int getMonth(java.sql.Date date) {
+    public static int getMonth(Date date) {
         Calendar actualMonth = Calendar.getInstance();
         actualMonth.setTime(date);
         return actualMonth.get(Calendar.MONTH) + 1;
@@ -306,7 +306,7 @@ public class DateUtil {
      *
      * @return int
      */
-    public static int getDay(java.sql.Date date) {
+    public static int getDay(Date date) {
         Calendar actualMonth = Calendar.getInstance();
         actualMonth.setTime(date);
         return actualMonth.get(Calendar.DAY_OF_MONTH);
@@ -318,11 +318,11 @@ public class DateUtil {
      * @param date 当前时间
      * @return 某一年内的第一天
      */
-    public static java.sql.Date firstOfYear(java.sql.Date date) {
+    public static Date firstOfYear(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         String s = temp.get(Calendar.YEAR) + "-01-01";
-        return java.sql.Date.valueOf(s);
+        return Date.valueOf(s);
     }
 
     /**
@@ -331,11 +331,11 @@ public class DateUtil {
      * @param date 当前时间
      * @return 某一年内的最后一天
      */
-    public static java.sql.Date lastOfYear(java.sql.Date date) {
+    public static Date lastOfYear(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         String s = temp.get(Calendar.YEAR) + "-12-31";
-        return java.sql.Date.valueOf(s);
+        return Date.valueOf(s);
     }
 
     /**
@@ -344,11 +344,11 @@ public class DateUtil {
      * @param date 当前时间
      * @return 下一年的同一天
      */
-    public static java.sql.Date nextYearSameDay(java.sql.Date date) {
+    public static Date nextYearSameDay(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         temp.add(Calendar.YEAR, 1);
-        return new java.sql.Date(temp.getTimeInMillis());
+        return new Date(temp.getTimeInMillis());
     }
 
     /**
@@ -357,11 +357,11 @@ public class DateUtil {
      * @param date 当前时间
      * @return 下一年的同一天
      */
-    public static java.sql.Date lastYearSameDay(java.sql.Date date) {
+    public static Date lastYearSameDay(Date date) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         temp.add(Calendar.YEAR, -1);
-        return new java.sql.Date(temp.getTimeInMillis());
+        return new Date(temp.getTimeInMillis());
     }
 
     /**
@@ -370,14 +370,14 @@ public class DateUtil {
      * @param strDate 格式为"yyyy-mm-dd"或"yyyy-mm"或"yyyy"的字符串
      * @return 日期
      */
-    public static java.sql.Date StringToDate(String strDate) {
+    public static Date StringToDate(String strDate) {
         try {
             StringBuffer strBuffer = new StringBuffer(strDate);
             while (strBuffer.lastIndexOf("-") < 7) {
                 strBuffer.append("-01");
             }
 
-            return java.sql.Date.valueOf(strBuffer.toString());
+            return Date.valueOf(strBuffer.toString());
         } catch (RuntimeException e) {
             return null;
         }
@@ -389,7 +389,7 @@ public class DateUtil {
      * @param strDate
      * @return
      */
-    public static java.sql.Date StringToDate2(String strDate) {
+    public static Date StringToDate2(String strDate) {
         try {
             String year = strDate.substring(0, 4);
             String month = strDate.substring(5, 7);
@@ -401,7 +401,7 @@ public class DateUtil {
         }
     }
 
-    public static java.sql.Date StringToDate3(String strDate) {
+    public static Date StringToDate3(String strDate) {
         try {
             String year = strDate.substring(0, 4);
             String month = strDate.substring(6, 8);
@@ -420,7 +420,7 @@ public class DateUtil {
      * @param date1 第二个日期
      * @return int 0---是同一天，1--date1>date2，-1--date1<date2
      */
-    public static int compareTwoDates(java.sql.Date date1, java.sql.Date date2) {
+    public static int compareTwoDates(Date date1, Date date2) {
         int intRet = -1;
         if (date1 == null && date2 == null) {
             intRet = 0;
@@ -441,11 +441,11 @@ public class DateUtil {
     /**
      * 得到和入参日期，相差N天的日期。n<0,日期后退，n>0日期增加。
      */
-    public static java.sql.Date difDate(java.sql.Date date, Integer dateNum) {
+    public static Date difDate(Date date, Integer dateNum) {
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(date.getTime());
         temp.add(Calendar.DATE, dateNum.intValue());
-        return new java.sql.Date(temp.getTimeInMillis());
+        return new Date(temp.getTimeInMillis());
     }
 
     /**
@@ -497,15 +497,15 @@ public class DateUtil {
         return dateOne.before(dateTwo);
     }
 
-    public static java.sql.Date getNowDate() {
+    public static Date getNowDate() {
 
         Calendar temp = Calendar.getInstance();
         // String s = temp.get(Calendar.YEAR) + "-01-01";
 
-        return new java.sql.Date(temp.getTimeInMillis());
+        return new Date(temp.getTimeInMillis());
     }
 
-    public static java.sql.Date getTodayDate() {
+    public static Date getTodayDate() {
         return Date.valueOf(getNowDate().toString());
     }
 
@@ -656,7 +656,7 @@ public class DateUtil {
      * @param day   间隔日期
      * @return 如果begin +day日<=end返回true，否则返回true
      */
-    public static boolean compareDate(java.sql.Date begin, java.sql.Date end,
+    public static boolean compareDate(Date begin, Date end,
                                       int day) {
         long lbegin = begin.getTime();
         long lend = end.getTime();
@@ -738,7 +738,7 @@ public class DateUtil {
     }
 
     public static String getServerDate(String format) {
-        java.text.SimpleDateFormat dateformat = new java.text.SimpleDateFormat(
+        SimpleDateFormat dateformat = new SimpleDateFormat(
                 format);
         return dateformat.format(Calendar.getInstance().getTime());
     }
@@ -749,7 +749,7 @@ public class DateUtil {
     }
 
     // 把 sql.Date 转换成 util.Date
-    public static java.util.Date getSql2UtilDate(java.sql.Date sqlDate) {
+    public static java.util.Date getSql2UtilDate(Date sqlDate) {
 
         java.util.Date d = new java.util.Date(sqlDate.getTime());
         return d;
@@ -757,23 +757,27 @@ public class DateUtil {
     }
 
     // 把util.Date 转换成 sql.Date
-    public static java.sql.Date getUtil2SqlDate(java.util.Date utilDate) {
+    public static Date getUtil2SqlDate(java.util.Date utilDate) {
 
-        java.sql.Date d = new java.sql.Date(utilDate.getTime());
+        Date d = new Date(utilDate.getTime());
         return d;
 
     }
 
     // 取得当前日期 sql
-    public static java.sql.Date getNowSqlDate() {
+    public static Date getNowSqlDate() {
         java.util.Date utilDate = new java.util.Date();
-        java.sql.Date d = new java.sql.Date(utilDate.getTime());
+        Date d = new Date(utilDate.getTime());
         return d;
     }
 
     //得到月数差
     public static int getMonthDifference(Date start, Date end) {
-        return (end.getYear() - start.getYear()) * 12 + end.getMonth() - start.getMonth() + 1;
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.setTime(start);
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(end);
+        return (endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR)) * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH) + 1;
     }
 
     //Date 转为 timestamp

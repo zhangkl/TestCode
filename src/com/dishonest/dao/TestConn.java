@@ -72,8 +72,9 @@ public class TestConn {
         List list = new ArrayList();
         ResultSet rs;
         Statement statement = null;
+        Connection connection = null;
         try {
-            Connection connection = conPool.getConnection();
+            connection = conPool.getConnection();
             statement = connection.createStatement();
             rs = statement.executeQuery(sql);
             ResultSetMetaData md = rs.getMetaData(); //得到结果集(rs)的结构信息，比如字段数、字段名等
@@ -86,13 +87,13 @@ public class TestConn {
                 }
                 list.add(rowData);
             }
-            conPool.returnConnection(connection);
         } catch (SQLException e) {
             throw e;
         } finally {
             if (statement != null) {
                 statement.close();
             }
+            conPool.returnConnection(connection);
         }
         return list;
     }
@@ -148,8 +149,9 @@ public class TestConn {
     //执行查询
     public void psAdd(String sql, List list) throws SQLException {
         PreparedStatement ps = null;
+        Connection connection = null;
         try {
-            Connection connection = conPool.getConnection();
+            connection = conPool.getConnection();
             ps = connection.prepareStatement(sql);
             for (int i = 0; i < list.size(); i++) {
                 if (list.get(i) instanceof Integer) {
@@ -163,33 +165,35 @@ public class TestConn {
                 }
             }
             ps.execute();
-            conPool.returnConnection(connection);
         } catch (SQLException e) {
+            e.printStackTrace();
 
         } finally {
             if (ps != null) {
                 ps.close();
             }
+            conPool.returnConnection(connection);
         }
     }
 
-    public int executeSave(String sql) throws SQLException {
+    public boolean executeSaveOrUpdate(String sql) throws SQLException {
         Statement statement = null;
+        Connection connection = null;
         try {
-            Connection connection = conPool.getConnection();
+            connection = conPool.getConnection();
             statement = connection.createStatement();
             if (statement.execute(sql)) {
-                return 1;
+                return true;
             }
-            conPool.returnConnection(connection);
         } catch (SQLException e) {
             throw e;
         } finally {
             if (statement != null) {
                 statement.close();
             }
+            conPool.returnConnection(connection);
         }
-        return 0;
+        return false;
     }
 
     private static class SingletonFactory {

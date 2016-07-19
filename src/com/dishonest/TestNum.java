@@ -13,6 +13,7 @@ import com.dishonest.util.CheckNumber;
 import com.dishonest.util.DateUtil;
 import com.dishonest.util.HttpUtil;
 import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -41,8 +42,9 @@ import java.util.concurrent.Executors;
  */
 public class TestNum implements Runnable {
 
+    static String hostName = System.getenv("COMPUTERNAME");
+    static int threadPoolSize = 30;
     TestConn testConn = TestConn.getInstance();
-
     String cardNum;
     int endPageNum;
     int stratPageNum;
@@ -65,9 +67,10 @@ public class TestNum implements Runnable {
     }
 
     public static void main(String[] args) throws IOException, SQLException, InterruptedException {
-        ExecutorService threadPool = Executors.newFixedThreadPool(25);
+        ExecutorService threadPool = Executors.newFixedThreadPool(threadPoolSize);
         String querySql = "select * from cred_dishonesty_log where result is null order by to_number(startpage) desc";
         List list = TestConn.getInstance().executeQueryForList(querySql);
+        TestConn.getInstance().executeSaveOrUpdate("update cred_dishonesty_proxy set isusered = 0 where isusered = 1");
         Iterator it = list.iterator();
         int i = 0;
         for (int j = 0; j < 50; j++) {
@@ -77,24 +80,29 @@ public class TestNum implements Runnable {
             String startpage = (String) map.get("STARTPAGE");
             String sucessNum = (String) map.get("SUCESSNUM");
             String sameNum = (String) map.get("SAMENUM");
-            HttpUtil httpUtil;
-            if (i < 5) {
-                httpUtil = new HttpUtil();
-                i++;
+            String threadHostName = (String) map.get("HOSTNAME");
+            if (threadHostName != null && !"".equals(threadHostName) && !hostName.equals(threadHostName)) {
+                continue;
             } else {
-                httpUtil = new HttpUtil(true, getProxy());
-            }
+                HttpUtil httpUtil;
+                if (i < 5) {
+                    httpUtil = new HttpUtil();
+                    i++;
+                } else {
+                    httpUtil = new HttpUtil(true, getProxy(0));
+                }
 
-            TestNum testNum = new TestNum("", cardNum, Integer.valueOf(startpage), Integer.valueOf(endpage), httpUtil, Integer.valueOf(sucessNum), Integer.valueOf(sameNum));
+                TestNum testNum = new TestNum("", cardNum, Integer.valueOf(startpage), Integer.valueOf(endpage), httpUtil, Integer.valueOf(sucessNum), Integer.valueOf(sameNum));
             /*Thread thread = new Thread(testNum);
             thread.start();*/
-            threadPool.execute(testNum);
-            Thread.sleep(1000);
+                threadPool.execute(testNum);
+                Thread.sleep(1000);
+            }
         }
     }
 
     public static String getImageCode(HttpUtil httpUtil) throws IOException, InterruptedException {
-        long startTime = System.currentTimeMillis();
+//        long startTime = System.currentTimeMillis();
         byte[] result = httpUtil.doGetByte("http://shixin.court.gov.cn/image.jsp?date=" + System.currentTimeMillis(), null);
         ByteInputStream bin = new ByteInputStream();
         if (result == null) {
@@ -103,8 +111,8 @@ public class TestNum implements Runnable {
         bin.setBuf(result);
         BufferedImage image = ImageIO.read(bin);
         String code = CheckNumber.getCheckNumber(image);
-        Long codeTime = System.currentTimeMillis();
-        System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":获取验证码时间：" + (codeTime - startTime) / 1000 + "s,code:" + code + ",代理地址：" + httpUtil.getProxyURL());
+//        Long codeTime = System.currentTimeMillis();
+//        System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":获取验证码时间：" + (codeTime - startTime) / 1000 + "s,code:" + code + ",代理地址：" + httpUtil.getProxyURL());
         return code;
     }
 
@@ -161,18 +169,18 @@ public class TestNum implements Runnable {
         return list;
     }
 
-    public static synchronized String getProxy() throws SQLException {
+    public static synchronized String getProxy(int istatus) throws SQLException {
         String proxyUrl;
-        Map map = TestConn.getInstance().executeQueryForMap("select * from cred_dishonesty_proxy where isusered = 0");
+        Map map = TestConn.getInstance().executeQueryForMap("select * from cred_dishonesty_proxy where isusered = '" + istatus + "'");
         if (map == null) {
             System.out.println("***********************************************************");
             System.out.println("********************代理已用光,重置所有代理状态为可用****************************");
             System.out.println("***********************************************************");
-            TestConn.getInstance().executeSave("update cred_dishonesty_proxy set isusered = 0");
-            getProxy();
+            TestConn.getInstance().executeSaveOrUpdate("update cred_dishonesty_proxy set isusered = 0 where isusered = 1");
+            getProxy(istatus);
         }
         proxyUrl = (String) map.get("PROXYURL");
-        TestConn.getInstance().executeSave("update cred_dishonesty_proxy set isusered = 1 where proxyurl = '" + proxyUrl + "'");
+        TestConn.getInstance().executeSaveOrUpdate("update cred_dishonesty_proxy set isusered = 1 where proxyurl = '" + proxyUrl + "'");
         return proxyUrl;
     }
 
@@ -184,18 +192,42 @@ public class TestNum implements Runnable {
                 worker(i + "");
             }
             String logSql = "update cred_dishonesty_log set result = '1',dcurrentdate = sysdate where cardnum = '" + cardNum + "'";
-            testConn.executeSave(logSql);
+            testConn.executeSaveOrUpdate(logSql);
         } catch (ClassCastException e) {
             try {
-                System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":重复访问出错,更换前代理:" + httpUtil.getProxyURL());
-                Thread.sleep(1000 * 60 * 1);
-                changeProxy();
-                System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":重复访问出错,更换后代理:" + httpUtil.getProxyURL());
+                if ("null:0".equals(httpUtil.getProxyURL())) {
+                    System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":重复访问出错,更换前代理:" + httpUtil.getProxyURL());
+                    Thread.sleep(1000 * 60 * 30);
+                    System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":重复访问出错,更换后代理:" + httpUtil.getProxyURL());
+                } else {
+                    System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":重复访问出错,更换前代理:" + httpUtil.getProxyURL());
+                    Thread.sleep(1000 * 60 * 1);
+                    changeProxy();
+                    System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":重复访问出错,更换后代理:" + httpUtil.getProxyURL());
+                }
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
+        } catch (JSONException jsonException) {
+            try {
+                if ("null:0".equals(httpUtil.getProxyURL())) {
+                    System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":重复访问出错,更换前代理:" + httpUtil.getProxyURL());
+                    Thread.sleep(1000 * 60 * 30);
+                    System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":重复访问出错,更换后代理:" + httpUtil.getProxyURL());
+                } else {
+                    System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":重复访问出错,更换前代理:" + httpUtil.getProxyURL());
+                    Thread.sleep(1000 * 60 * 1);
+                    changeProxy();
+                    System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":重复访问出错,更换后代理:" + httpUtil.getProxyURL());
+                }
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -209,8 +241,8 @@ public class TestNum implements Runnable {
 
     public void changeProxy() throws SQLException {
         String currentProxy = httpUtil.getProxyURL();
-        testConn.executeSave("update cred_dishonesty_proxy set isusered = 2 where proxyurl = '" + currentProxy + "'");
-        httpUtil.setProxyURL(getProxy());
+        testConn.executeSaveOrUpdate("update cred_dishonesty_proxy set isusered = 2 where proxyurl = '" + currentProxy + "'");
+        httpUtil.setProxyURL(getProxy(0));
     }
 
     public void worker(String pageNum) throws InterruptedException, IOException, ParserException, SQLException {
@@ -223,8 +255,8 @@ public class TestNum implements Runnable {
         }
         String logStr = DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":查询条件：" + cardNum + ",当前页数：" + pageNum + "，总重复个数" + sameNum + ",总成功个数：" + sucessNum + ",查询入库完成。" + ",代理地址：" + httpUtil.getProxyURL();
         System.out.println(logStr);
-        String logSql = "update cred_dishonesty_log set samenum = '" + sameNum + "',sucessnum='" + sucessNum + "', remark='" + logStr + "',startpage='" + pageNum + "',dcurrentdate = sysdate where cardnum = '" + cardNum + "'";
-        testConn.executeSave(logSql);
+        String logSql = "update cred_dishonesty_log set samenum = '" + sameNum + "',sucessnum='" + sucessNum + "', remark='" + logStr + "',startpage='" + pageNum + "',hostname='" + hostName + "',dcurrentdate = sysdate where cardnum = '" + cardNum + "'";
+        testConn.executeSaveOrUpdate(logSql);
     }
 
     /**
@@ -240,7 +272,7 @@ public class TestNum implements Runnable {
             sendTime++;
             if (s == null || "".equals(s) || s.contains("验证码错误")) {
                 Thread.currentThread().sleep(1000 * 60 * 1);
-                System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":线程休眠5分钟，发送次数：" + sendTime + ",cardNum:" + cardNum + ",pageNum:" + pageNum + ",code:" + code + ",arrayList:" + arrayList + ",s:" + (s == null || "".equals(s) || s.contains("验证码错误")) + ",代理地址：" + httpUtil.getProxyURL());
+                System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":线程休眠1分钟，发送次数：" + sendTime + ",cardNum:" + cardNum + ",pageNum:" + pageNum + ",code:" + code + ",arrayList:" + arrayList + ",s:" + (s == null || "".equals(s) || s.contains("验证码错误")) + ",代理地址：" + httpUtil.getProxyURL());
                 code = getImageCode(httpUtil);
                 s = httpUtil.doPostString("http://shixin.court.gov.cn/findd",
                         "pName", "__", "pCardNum", "__________" + cardNum + "____", "pProvince", "0", "currentPage", pageNum, "pCode", code);
@@ -254,35 +286,35 @@ public class TestNum implements Runnable {
     /**
      * 获取并存储具体失信人信息
      */
-    public void saveDishoney(String saveid) throws SQLException, InterruptedException, IOException {
-        sendTime = 0;
-        String idInfo = "";
+    public void saveDishoney(String saveid) throws InterruptedException, IOException {
         String queryIdSql = "select * from CRED_DISHONESTY_PERSON where iid = '" + saveid + "'";
-        List resultlist = testConn.executeQueryForList(queryIdSql);
+        List resultlist = null;
+        try {
+            resultlist = testConn.executeQueryForList(queryIdSql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         if (resultlist != null && resultlist.size() > 0) {
             sameNum++;
             return;
         }
+        sendTime = 0;
+        String idInfo = "";
         Map map = new HashMap();
         do {
             map.put("id", saveid);
             map.put("pCode", code);
             idInfo = httpUtil.doGetString("http://shixin.court.gov.cn/findDetai", map);
             sendTime++;
-            if (idInfo == null || idInfo.contains("验证码错误")) {
+            if (idInfo == null || idInfo.contains("验证码错误") || !idInfo.startsWith("{")) {
                 Thread.currentThread().sleep(1000 * 60 * 1);
                 System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":发送次数：" + sendTime + ",map:" + map + ",idInfo:" + idInfo + ",代理地址：" + httpUtil.getProxyURL());
                 code = getImageCode(httpUtil);
+                map.put("pCode", code);
                 idInfo = httpUtil.doGetString("http://shixin.court.gov.cn/findDetai", map);
                 sendTime++;
             }
-        } while (sendTime <= maxTime && (idInfo == null || idInfo.contains("验证码错误")));
-        if (idInfo.contains("验证码错误")) {
-            Thread.currentThread().sleep(1000 * 60 * 1);
-
-            System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + ":访问出错，线程休眠" + idInfo + ",代理地址：" + httpUtil.getProxyURL());
-            saveDishoney(saveid);
-        }
+        } while (sendTime <= maxTime && (idInfo == null || idInfo.contains("验证码错误") || !idInfo.startsWith("{")));
         JSONObject json = JSONObject.fromObject(idInfo);
         Integer iid = json.optInt("id");
         String siname = json.optString("iname");
@@ -328,7 +360,12 @@ public class TestNum implements Runnable {
         String sql = "insert into CRED_DISHONESTY_PERSON (IID, SINAME, SCARDNUM, SCASECODE, IAGE, SSEXY, SAREANAME, SCOURTNAME, DREGDATE," +
                 " SDUTY, SPERFORMANCE, SPERFORMEDPART, SUNPERFORMPART, SDISRUPTTYPENAME, DPUBLISHDATE, SPARTYTYPENAME, SGISTID, SGISTUNIT) " +
                 "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        testConn.psAdd(sql, list);
+        try {
+            testConn.psAdd(sql, list);
+        } catch (SQLException e) {
+            System.out.println(DateUtil.getNowDateTime() + ":" + Thread.currentThread().getName() + saveid + ":" + idInfo);
+            e.printStackTrace();
+        }
         sucessNum++;
     }
 
