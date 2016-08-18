@@ -1,7 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ ******************************************************************************/
+
 package testThread;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,17 +25,16 @@ public class TestThread implements Runnable {
         this.num = num;
     }
 
-    public static void main(String[] args) {
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        Long stattime = System.currentTimeMillis();
-        for (int i = 0; i < 500; i++) {
+    public static void main(String[] args) throws InterruptedException {
+        ExecutorService executorService = new MyFixedThreadPool(10);
+        for (int i = 0; i < 50; i++) {
+            Long stattime = System.currentTimeMillis();
             TestThread testThread = new TestThread(i);
-            Thread thread = new Thread(testThread);
-            thread.start();
-            //executorService.execute(testThread);
+            executorService.execute(testThread);
+            Long endtime = System.currentTimeMillis();
+            System.out.println(Thread.currentThread().getName() + ":执行时间(ms)：" + i + ":" + (endtime - stattime));
         }
-        Long endtime = System.currentTimeMillis();
-        System.out.println("执行时间(ms)：" + (endtime - stattime));
+        executorService.shutdown();
     }
 
     @Override

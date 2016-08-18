@@ -51,6 +51,10 @@ public class HttpUtil {
         httpClient = HttpClients.createDefault();
     }
 
+    public static void main(String[] args) {
+        HttpUtil httpUtil = new HttpUtil();
+    }
+
     public String getProxyURL() {
         return proxyURL + ":" + proxyPort;
     }
@@ -142,7 +146,6 @@ public class HttpUtil {
             getCookies(httpResponse);
             if (httpResponse.getStatusLine().getStatusCode() == 200) {
                 /* 读返回数据 */
-                getCookies(httpResponse);
                 HttpEntity entity = httpResponse.getEntity();
                 Object result = null;
                 if (entity.getContentType().getValue().startsWith("image")) {

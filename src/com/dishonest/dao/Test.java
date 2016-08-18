@@ -18,7 +18,6 @@ import org.htmlparser.filters.HasAttributeFilter;
 import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
-import org.htmlparser.util.ParserException;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -40,45 +39,24 @@ public class Test implements Runnable {
 
     public static void main(String[] args) {
         try {
-            getProxy("http://www.youdaili.net/Daili/http/4722.html");
+            getNetStatus();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void getProxy(String url) throws ParserException {
-        Parser parser = new Parser(url);
-        parser.setEncoding("utf-8");
-        NodeFilter filter1 = new HasAttributeFilter("style", "font-size:14px;");
-        NodeFilter filter2 = new TagNameFilter("span");
-        AndFilter contentFilter = new AndFilter(filter1, filter2);
-        NodeList nodes = parser.extractAllNodesThatMatch(contentFilter);
-        System.out.println(nodes.asString());
-        String[] strings = nodes.asString().split("\n");
-        for (int i = 0; i < strings.length - 5; i++) {
-            System.out.println(i + ":" + strings[i].split("@")[0]);
-            try {
-                TestConn.getInstance().executeSaveOrUpdate("insert into cred_dishonesty_proxy (proxyurl,dgetdata,isusered) values ('" + strings[i].split("@")[0] + "',sysdate,0)");
-            } catch (SQLException e) {
-                if (e.getMessage().contains("ORA-00001: 违反唯一约束条件 (CRED.PK_PROXY)")) {
-                    System.out.println(e.getMessage());
-                    continue;
-                } else {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-    }
-
-    public static void getNetStatus() throws IOException {
-        Process process = Runtime.getRuntime().exec("ping shixin.court.gov.cn -t");
+    public static void getNetStatus() throws IOException, InterruptedException {
+        Process process = Runtime.getRuntime().exec("telnet 202.102.85.100 22");
         InputStreamReader isr = new InputStreamReader(process.getInputStream(), "GBK");
         LineNumberReader reader = new LineNumberReader(isr);
+        process.waitFor();
         String line = "";
         while ((line = reader.readLine()) != null) {
             System.out.println(line);
         }
+        isr.close();
+        reader.close();
+        process.destroy();
     }
 
     public static void compare() {

@@ -16,10 +16,10 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class TestQXB extends Thread {
     int startPage = 0;
@@ -44,10 +44,12 @@ public class TestQXB extends Thread {
         try {
             TestConn testConn = TestConn.getInstance();
             String querySql = "select * from cred_qixinbao_url where remark is null";
-            ResultSet resultSet = testConn.executeQuery(querySql);
-            while (resultSet.next()) {
-                String queryurl = resultSet.getString("enturl");
-                String queryArea = resultSet.getString("area");
+            List resultSet = testConn.executeQueryForList(querySql);
+            Iterator iterator = resultSet.iterator();
+            while (iterator.hasNext()) {
+                Map map = (Map) iterator.next();
+                String queryurl = (String) map.get("ENTURL");
+                String queryArea = (String) map.get("AREA");
                 TestQXB testQXB = new TestQXB(0, 20, 0, testConn, testConn.creatPStatement("insert into cred_ent_url (ENTURL, ENTNAME, AREA) values (?,?,?)"), queryurl, queryArea);
                 Thread thread = new Thread(testQXB);
                 thread.run();
