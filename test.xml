@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<TEST_PACK node=" ">
+     <Test>
+          <sub id="330300" block="1" livetime="5000" pri="8" pack_ver="32" note="证券代码信息查询">
+               <route system="" branch="" esb_name="" esb_no="0" neighbor="" plugin=""/>
+               <inparams note="证券代码信息查询">
+                    <in name="op_branch_no" value=""/>
+                    <in name="op_entrust_way" value="G"/>
+                    <in name="op_station" value=""/>
+                    <in name="query_type" value=""/>
+                    <in name="exchange_type" value=""/>
+                    <in name="stock_type" value=""/>
+                    <in name="stock_code" value=""/>
+                    <in name="position_str" value=""/>
+                    <in name="request_num" value=""/>
+               </inparams>
+          </sub>
+          <sub id="331100" block="1" livetime="5000" pri="8" pack_ver="32" note="客户登录">
+               <route system="" branch="" esb_name="" esb_no="0" neighbor="" plugin=""/>
+               <inparams note="客户登录">
+                    <in name="op_branch_no" value=""/>
+                    <in name="op_entrust_way" value="G"/>
+                    <in name="op_station" value=""/>
+                    <in name="branch_no" value=""/>
+                    <in name="password" value="111111"/>
+                    <in name="password_type" value="2"/>
+                    <in name="input_content" value=""/>
+                    <in name="account_content" value=""/>
+                    <in name="content_type" value=""/>
+                    <in name="asset_prop" value=""/>
+               </inparams>
+          </sub>
+     </Test>
+</TEST_PACK>
