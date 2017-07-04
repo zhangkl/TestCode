@@ -8,8 +8,8 @@
 
 package testHttp.qixinbao;
 
-import com.dishonest.dao.TestConn;
-import com.dishonest.util.DateUtil;
+import dishonest.dao.TestConn;
+import dishonest.util.DateUtil;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;

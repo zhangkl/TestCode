@@ -8,12 +8,12 @@
 
 package testHtmlUtil;
 
-import com.dishonest.dao.TestConn;
 import com.gargoylesoftware.htmlunit.CookieManager;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.Cookie;
+import dishonest.dao.TestConn;
 
 import java.io.IOException;
 import java.sql.Statement;

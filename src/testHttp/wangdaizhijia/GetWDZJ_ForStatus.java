@@ -8,7 +8,7 @@
 
 package testHttp.wangdaizhijia;
 
-import com.dishonest.dao.TestConn;
+import dishonest.dao.TestConn;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.htmlparser.util.ParserException;

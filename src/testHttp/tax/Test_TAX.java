@@ -8,7 +8,7 @@
 
 package testHttp.tax;
 
-import com.dishonest.dao.TestConn;
+import dishonest.dao.TestConn;
 import org.apache.log4j.Logger;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;

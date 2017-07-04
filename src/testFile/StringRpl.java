@@ -1,12 +1,6 @@
 package testFile;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class StringRpl {
 
@@ -14,7 +8,8 @@ public class StringRpl {
         StringBuffer res = new StringBuffer();
         String line = null;
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(src));
+            FileInputStream in = new FileInputStream(src);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, "GB2312"));
             while ((line = reader.readLine()) != null) {
                 res.append(line + "\n");
             }
@@ -40,18 +35,16 @@ public class StringRpl {
         }
     }
 
-    public StringRpl() {
-    }
 
     public static void main(String[] args) {
-        File src = new File("C:\\Users\\lenovo-01\\Desktop\\123.txt");
+        File src = new File("C:\\Users\\zhangkl\\Desktop\\太平洋证券基金理财接口文档.docx");
         String cont = StringRpl.read(src);
         System.out.println(cont);
         //对得到的内容进行处理
         cont = cont.replaceAll("16477475474", "123");
         System.out.println(cont);
         //更新源文件
-        System.out.println(StringRpl.write(cont, src));
+//        System.out.println(StringRpl.write(cont, src));
     }
 
 }

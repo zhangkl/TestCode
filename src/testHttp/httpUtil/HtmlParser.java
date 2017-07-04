@@ -13,7 +13,7 @@
 
 package testHttp.httpUtil;
 
-import com.dishonest.dao.TestConn;
+import dishonest.dao.TestConn;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.common.util.StringHelper;
 import org.htmlparser.NodeFilter;

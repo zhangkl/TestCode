@@ -2,8 +2,6 @@ package testRedis;
 
 import redis.clients.jedis.Jedis;
 
-import java.io.UnsupportedEncodingException;
-
 /**
  * Created with IntelliJ IDEA.
  * User: zhangkl
@@ -12,8 +10,8 @@ import java.io.UnsupportedEncodingException;
  * To change this template use File | Settings | File Templates.
  */
 public class testRedis {
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        Jedis jedis = new Jedis("127.0.0.1", 8080);
+    public static void main(String[] args){
+        Jedis jedis = new Jedis("localhost");
         //权限认证
         jedis.auth("admin");
         System.out.println("Connection to server sucessfully");

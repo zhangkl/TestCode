@@ -8,7 +8,7 @@
 
 package testHttp.shixinren;
 
-import com.dishonest.dao.TestConn;
+import dishonest.dao.TestConn;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import testFile.ReadWriteFileWithEncode;

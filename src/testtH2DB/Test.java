@@ -8,7 +8,7 @@
 
 package testtH2DB;
 
-import com.dishonest.dao.TestConn;
+import dishonest.dao.TestConn;
 import org.h2.tools.Server;
 
 import java.sql.*;
