@@ -2,7 +2,12 @@ package rabbitMQ;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+
+import static oracle.net.aso.C11.k;
 
 public class TestMQ {
 
@@ -28,6 +33,13 @@ public class TestMQ {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws Exception{
-	  new TestMQ();
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR_OF_DAY,9);
+		cal.set(Calendar.MINUTE,30);
+		cal.set(Calendar.SECOND,00);
+		DateFormat df = new SimpleDateFormat("hhmmss");
+		System.out.println(df.format(cal.getTime()));
+		cal.add(Calendar.MINUTE,5);
+		System.out.println(cal.getTime());
 	}
 }
