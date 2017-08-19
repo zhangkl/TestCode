@@ -2,8 +2,8 @@ package testTransform;
 
 public class Transform {
     public int[][] transformImage(int[][] mat, int n) {
-        // write code| here
-        printArray(mat);   //打印数组
+        // write code| here test
+        printArray(mat);    //打印数组
         int[][] result = copeArray(mat);   //拷贝数组
         for(int x = 0;x<n;x++){
             for(int y = 0;y<n;y++){
