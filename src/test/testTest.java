@@ -5,17 +5,20 @@ import org.junit.Test;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 
+import static oracle.net.aso.C11.k;
+import static oracle.net.aso.C11.t;
+
 /**
  * Created by zhangkl on 2017/5/    .
  */
-public class testTest{
+public class testTest {
 
 
-    final String s = "12313" ;
+    final String s = "12313";
 
     @Test
     public void testTest() throws UnsupportedEncodingException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        String str = "1231111" ;
+        String str = "1231111";
         baseUtil(str);
     }
 
@@ -25,5 +28,14 @@ public class testTest{
         System.out.println(new String(Base64.decode("MTIz")));
         System.out.println(new String(Base64.decode("MSUFBUHBF")));*/
 
+    }
+
+    @Test
+    public void testBool() {
+        final String code = "10601099";
+    }
+
+    public void setS(String s) {
+        s = "123";
     }
 }
